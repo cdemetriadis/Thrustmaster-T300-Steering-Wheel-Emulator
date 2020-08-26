@@ -1,14 +1,3 @@
-/*
-Author: Danny van den Brande, Arduinosensors.nl. BlueCore Tech.
-In this example code i gave all the buttons a function, Because i
-can not find any projects with this keypad, i made a example.
-If you make a project with it such as a alarm or whatever.
-Please share it with me @ contact@arduinosensor.nl.
-With this code way we know which value is assigned to which key,
-you can also see the values in the serial monitor.
-you can modify those parts as you wish to give it other functions.
-*/
-
   #define DEBUG true
 
   int rowCounter = 0; // Row counter
