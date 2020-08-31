@@ -1,21 +1,27 @@
-  #define DEBUG true
+#define   DEBUG true
+#define   DEBUG_WHEEL false
 
-  int rowCounter = 0; // Row counter
-  int colCounter = 0; // Column counter
-  int foundColumn = 0; // Active column
-  boolean foundCol = false;
-  int keyValue = 0;
-  int noKey = 0;
-  boolean readKey = false;
-  int debounce = 1000; // set this to the lowest value that gives the best result
-  volatile byte pos;
-  byte wheelState[8]; // local push-buttons state saved here
+int       foundColumn = 0; // Active column
+int       keyValue = 0;
+int       debounce = 300; // set this to the lowest value that gives the best result
+byte      wheelState[8]; // local push-buttons state saved here
+volatile  byte pos;
 
-  // Button Grid
-  int row[] = {3, 4, 5, 6, 7, 8}; // Set pins for rows
-  int col[] = {A0, A1, A2, A3}; // Set pins for columns
-  int rowSize = sizeof(row)/sizeof(row[0]);
-  int colSize = sizeof(col)/sizeof(col[0]);
+// Setup Button Grid
+int     rowPin[] = {3, 4, 5, 6, 7}; // Set pins for rows
+int     colPin[] = {A0, A1, A2, A3}; // Set pins for columns
+int     rowSize = sizeof(rowPin)/sizeof(rowPin[0]);
+int     colSize = sizeof(colPin)/sizeof(colPin[0]);
+
+//
+//      Cols  |  0             1             2             3
+// Rows Pins  |  A0 (14)       A1 (15)       A2 (16)       A3 (17)
+// -------------------------------------------------------------------
+// 0    3     |  42 Triangle   45 Square     48 Cross      51 Circle
+// 1    4     |  56 L1         60 L2         64 R2         68 R1
+// 2    5     |  70 Share      75 PS         80 Options    85 -
+// 3    6     |  84 Up         90 Down       96 Left       102 Right
+// 4    7     |  98 -          105 -         112 L3        119 R3
 
 void setup(){
   
@@ -34,10 +40,10 @@ void setup(){
   SPCR |= _BV(SPIE);     // Enables the SPI interrupt when 1
   
   // Interrupt for SS rising edge.
-  attachInterrupt (0, ss_rising, RISING);
+  attachInterrupt (digitalPinToInterrupt(2), ss_rising, RISING);
   
   #if DEBUG
-    Serial.println("Thrustmaster Custom Wheel Emulator v1.0");
+    Serial.println("Thrustmaster Custom F1 Wheel Emulator v1.0");
     Serial.println();
     Serial.print("Setup ");
     Serial.print(rowSize);
@@ -50,221 +56,29 @@ void setup(){
   // Row setup
   //
   // Set rows as OUTPUT
-  // Maybe move to DDR & PORT?
-  // PORT B: 8-13
-  // PORT C: A0-A7
-  // Port D: 0-7
-  for (int r = 0; r <= rowSize-1; r++) {
-    pinMode(row[r], OUTPUT);
-  
-    if (row[r] >= 8 && row[r] <= 13) { // PORT B
-      DDRB  &= B11110000;
-      PORTB |= B00001011;
-    } else if (row[r] >= 0 && row[r] <= 7) { // PORT D
-      DDRD  &= B11000000;
-      PORTD |= B00000011;
-    } else if (row[r] >= 14 && row[r] <= 20) { // PORT C
-      DDRC  &= B00100000;
-      PORTC |= B11011011;
-    }
-
-    
+  for (int i=0; i<rowSize; i++) {
+    pinMode(rowPin[i], OUTPUT);
     #if DEBUG
       Serial.print("Pin: ");
-      Serial.print(row[r]);
+      Serial.print(rowPin[i]);
       Serial.print(" is set as OUTPUT on row: ");
-      Serial.println(r);
+      Serial.println(i);
     #endif
   }
   
   // Column setup
   //
   // Set columns as INPUT_PULLUP
-  for (int c = 0; c <= colSize-1; c++) {
-    pinMode(col[c], INPUT_PULLUP);
+  for (int i=0; i<colSize; i++) {
+    pinMode(colPin[i], INPUT_PULLUP);
     #if DEBUG
       Serial.print("Pin: ");
-      Serial.print(col[c]);
+      Serial.print(colPin[i]);
       Serial.print(" is set as INPUT_PULLUP on col: ");
-      Serial.println(c);
+      Serial.println(i);
     #endif
   }
-
-}
-
-void loop(){
-
-  // Check to see if any keys are pressed
-  //
-  // noKey is set in the readColumn() function.
-  // It increments 1 for every button that is not pressed.
-  // If no keys are pressed, then it sets readKey to true.
-  if(noKey == (rowSize * colSize)) { 
-    readKey = true;  // Keyboard is ready to accept a new keypress
-  }
-  noKey = 0; // Reset noKey value
-
-  // Search for a key press
-  //
-  // First we scan all rows in the row[] array
-  for (rowCounter=0; rowCounter<=rowSize-1; rowCounter++) {
-    scanRow(); // switch on one row at a time
-
-    // Then we scan all cols in the col[] array
-    for (colCounter=0; colCounter<=colSize-1; colCounter++) {
-      readColumn(); // read the switch pressed
-      if (foundCol == true){
-        keyValue = (row[rowCounter] * col[colCounter]); // We set a keyValue, unique to each key press
-      }
-    }
-  }
-
-
-  // Execute on the key press
-  //
-  // If we're ready to read a key and a key has been pressed
-  if (readKey == true && noKey == (rowSize * colSize - 1)) {
-
-    // Do things here
-    if (keyValue == 42) { // Triangle
-        wheelState[0] = wheelState[0] & B10111111;
-    }
-    
-    if (keyValue == 45) { // Square
-        #if DEBUG
-          Serial.print("Button: ");
-          Serial.print("Square");
-          Serial.print(" (");
-          Serial.print(keyValue);
-          Serial.println(")");
-        #endif
-    }
-    
-    if (keyValue == 48) { // Cross
-        #if DEBUG
-          Serial.print("Button: ");
-          Serial.print("Cross");
-          Serial.print(" (");
-          Serial.print(keyValue);
-          Serial.println(")");
-        #endif
-    }
-    
-    if (keyValue == 51) { // Circle
-        #if DEBUG
-          Serial.print("Button: ");
-          Serial.print("Circle");
-          Serial.print(" (");
-          Serial.print(keyValue);
-          Serial.println(")");
-        #endif
-    }
-    
-    if (keyValue == 56) { // L1
-        #if DEBUG
-          Serial.print("Button: ");
-          Serial.print("L1");
-          Serial.print(" (");
-          Serial.print(keyValue);
-          Serial.println(")");
-        #endif
-    }
-    
-    if (keyValue == 60) { // L2
-        #if DEBUG
-          Serial.print("Button: ");
-          Serial.print("L2");
-          Serial.print(" (");
-          Serial.print(keyValue);
-          Serial.println(")");
-        #endif
-    }
-    
-    if (keyValue == 64) { // R1
-        #if DEBUG
-          Serial.print("Button: ");
-          Serial.print("R1");
-          Serial.print(" (");
-          Serial.print(keyValue);
-          Serial.println(")");
-        #endif
-    }
-    
-    if (keyValue == 68) { // R2
-        #if DEBUG
-          Serial.print("Button: ");
-          Serial.print("R2");
-          Serial.print(" (");
-          Serial.print(keyValue);
-          Serial.println(")");
-        #endif
-    }
-    
-    if (keyValue == 70) { // Share
-        #if DEBUG
-          Serial.print("Button: ");
-          Serial.print("Share");
-          Serial.print(" (");
-          Serial.print(keyValue);
-          Serial.println(")");
-        #endif
-    }
-    
-    if (keyValue == 75) { // PS
-        #if DEBUG
-          Serial.print("Button: ");
-          Serial.print("PS");
-          Serial.print(" (");
-          Serial.print(keyValue);
-          Serial.println(")");
-        #endif
-    }
-    
-    if (keyValue == 80) { // Cross (5w)
-        #if DEBUG
-          Serial.print("Button: ");
-          Serial.print("R1");
-          Serial.print(" (");
-          Serial.print(keyValue);
-          Serial.println(")");
-        #endif
-    }
-    
-    // Reset all
-    readKey = false; // Reset the flag
-    delay(debounce); // Delay the next read
   
-  }
-
-  #if DEBUG
-    Serial.println();
-    for(int i = 0; i < 8; i++)
-    {
-      Serial.print(wheelState[i], BIN);
-      Serial.print(" ");
-    }
-  #endif
-  
-}
-
-void scanRow() {
-  // Set all pins in row to HIGH
-  for(int j = 0; j <= rowSize-1; j++){
-    digitalWrite(row[j], HIGH);
-  }
-  // Set the active pin to LOW
-  digitalWrite(row[rowCounter], LOW);
-}
-
-void readColumn() {
-  // Scan each pin in column
-  foundColumn = digitalRead(col[colCounter]);
-  if(foundColumn == 0){
-    foundCol = true; // Set founCol to true if we find an active pin
-  } else {
-    foundCol = false;
-    noKey++; // Counter for number of empty columns
-  }
 }
 
 // Interrupt0 (external, pin 2) - prepare to start the transfer
@@ -276,4 +90,191 @@ void ss_rising () {
 // SPI interrupt routine
 ISR (SPI_STC_vect) {
   SPDR = wheelState[pos++]; // load the next byte to SPI output register and return.
+}
+
+void loop() {
+  
+  // Search for a key press
+  //
+  // scanButtonMatrix() returns a unique keyValue
+  scanButtonMatrix();
+  
+  // Search for an encoder rotation
+  //
+  // scanEncoderMatrix() returns a unique keyValue for each rotation (left or right)
+//  scanEncoderMatrix();
+
+  //
+  // Set the button action based on the keyValue
+  switch (keyValue) {
+  
+    case 167: // Triangle
+      wheelState[0] = wheelState[0] & B10111111;
+      #if DEBUG
+        Serial.print("Button: Triangle ("); Serial.print(keyValue); Serial.println(") ");
+      #endif
+      break;
+    
+    case 186: // Square
+      wheelState[0] = wheelState[0] & B01111111;
+      #if DEBUG
+        Serial.print("Button: Square ("); Serial.print(keyValue); Serial.println(") ");
+      #endif
+      break;
+    
+    case 206: // Cross
+      wheelState[1] = wheelState[1] & B11111101;
+      #if DEBUG
+        Serial.print("Button: Cross ("); Serial.print(keyValue); Serial.println(") ");
+      #endif
+      break;
+    
+    case 227: // Circle
+      wheelState[0] = wheelState[0] & B11111110;
+      #if DEBUG
+        Serial.print("Button: Circle ("); Serial.print(keyValue); Serial.println(") ");
+      #endif
+      break;
+    
+    case 185: // L1
+      wheelState[0] = wheelState[0] & B11101111;
+      #if DEBUG
+        Serial.print("Button: L1 ("); Serial.print(keyValue); Serial.println(") ");
+      #endif
+      break;
+    
+    case 205: // L2
+      wheelState[1] = wheelState[1] & B11011111;
+      #if DEBUG
+        Serial.print("Button: L2 ("); Serial.print(keyValue); Serial.println(") ");
+      #endif
+      break;
+    
+    case 226: // R1
+      wheelState[0] = wheelState[0] & B11011111;
+      #if DEBUG
+        Serial.print("Button: R1 ("); Serial.print(keyValue); Serial.println(") ");
+      #endif
+      break;
+    
+    case 248: // R2
+      wheelState[1] = wheelState[1] & B11101111;
+      #if DEBUG
+        Serial.print("Button: R2 ("); Serial.print(keyValue); Serial.println(") ");
+      #endif
+      break;
+    
+    case 204: // Share
+      wheelState[1] = wheelState[1] & B11111011;
+      #if DEBUG
+        Serial.print("Button: Share ("); Serial.print(keyValue); Serial.println(") ");
+      #endif
+      break;
+    
+    case 225: // PS
+      wheelState[1] = wheelState[1] & B11111110;
+      #if DEBUG
+        Serial.print("Button: PS ("); Serial.print(keyValue); Serial.println(") ");
+      #endif
+      break;
+    
+    case 247: // Options
+      wheelState[1] = wheelState[1] & B11110111;
+      #if DEBUG
+        Serial.print("Button: Options ("); Serial.print(keyValue); Serial.println(") ");
+      #endif
+      break;
+    
+    case 224: // Up
+      wheelState[2] = wheelState[2] & B11101111;
+      #if DEBUG
+        Serial.print("Button: Up ("); Serial.print(keyValue); Serial.println(") ");
+      #endif
+      break;
+    
+    case 246: // Down
+      wheelState[2] = wheelState[2] & B11111101;
+      #if DEBUG
+        Serial.print("Button: Down ("); Serial.print(keyValue); Serial.println(") ");
+      #endif
+      break;
+    
+    case 269: // Left
+      wheelState[2] = wheelState[2] & B11110111;
+      #if DEBUG
+        Serial.print("Button: Left ("); Serial.print(keyValue); Serial.println(") ");
+      #endif
+      break;
+    
+    case 293: // Right
+      wheelState[2] = wheelState[2] & B11111011;
+      #if DEBUG
+        Serial.print("Button: Right ("); Serial.print(keyValue); Serial.println(") ");
+      #endif
+      break;
+    
+    case 292: // L3
+      wheelState[1] = wheelState[1] & B10111111;
+      #if DEBUG
+        Serial.print("Button: L3 ("); Serial.print(keyValue); Serial.println(") ");
+      #endif
+      break;
+    
+    case 317: // R3
+      wheelState[1] = wheelState[1] & B01111111;
+      #if DEBUG
+        Serial.print("Button: R3 ("); Serial.print(keyValue); Serial.println(") ");
+      #endif
+      break;
+    
+    default: // Reset if nothing is pressed
+      wheelState[0] = B11001111; // F1 wheel specific, and 5 Button
+      wheelState[1] = B11111111; // 8 Buttons
+      wheelState[2] = B11111111; // 8 Buttons
+      wheelState[3] = B11111111; // DIFF and CHRG flags
+      wheelState[4] = B00000000; // DIFF steps
+      wheelState[5] = B00000000; // CHRG steps
+      wheelState[6] = B01100000;
+      wheelState[7] = B01000000;
+      break;
+  }
+
+  #if DEBUG_WHEEL
+    for (int i = 0; i < 8; i++) {
+      Serial.print(wheelState[i], BIN);
+      Serial.print(" ");
+    }
+    Serial.println();
+  #endif
+
+  // Set a delay and reset the keyValue to something that will never match an exisitng keyValue
+  delay(debounce);
+  keyValue = 0;
+  
+}
+
+void scanButtonMatrix() {
+  for (int rowCounter=0; rowCounter<rowSize; rowCounter++) {
+    
+    // Set all rowPins to HIGH
+    for(int i=0; i<rowSize; i++) {
+      digitalWrite(rowPin[i], HIGH);
+    }
+
+    // Set the active rowPin to LOW
+    digitalWrite(rowPin[rowCounter], LOW);
+    
+    // Then we scan all cols in the col[] array
+    for (int colCounter=0; colCounter<colSize; colCounter++) {
+      // Scan each pin in column
+      foundColumn = digitalRead(colPin[colCounter]);
+      // If we find a COL:
+      // We set a keyValue, unique to each key press rowPin x colPin
+      if(foundColumn==0){
+        //
+        // Using a Cantor Pairing function we create unique numbers
+        keyValue = ( ( (rowPin[rowCounter]+colPin[colCounter]) * (rowPin[rowCounter]+colPin[colCounter]+1) ) / 2 + colPin[colCounter]);
+      }
+    }
+  }
 }
