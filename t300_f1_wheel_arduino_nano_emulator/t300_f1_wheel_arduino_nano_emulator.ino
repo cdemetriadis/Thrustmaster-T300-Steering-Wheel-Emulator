@@ -72,7 +72,7 @@ void setup(){
     Serial.print(rowSize);
     Serial.print("x");
     Serial.print(colSize);
-    Serial.println(" Button Grid");
+    Serial.println(" Button Matrix");
     Serial.println();
   #endif
   
@@ -122,20 +122,20 @@ void loop() {
   int code = encoders.readAll();
 
   //
-  // Set the encoder action based on the keyValue
+  // Set the encoder action based on the code
   switch (code) {
 
     case 700: // Encoder 1 CW "TC+"
       wheelState[2] = wheelState[2] & B11111011;
       #if DEBUG_ENCODERS
-        Serial.print("Encoder: TC Down ("); Serial.print(code); Serial.println(") ");
+        Serial.print("Encoder: TC+ ("); Serial.print(code); Serial.println(") ");
       #endif
       break;
 
      case 701: // Encoder 1 CCW "TC-"
       wheelState[2] = wheelState[2] & B11110111;
       #if DEBUG_ENCODERS
-        Serial.print("Encoder: TC Up ("); Serial.print(code); Serial.println(") ");
+        Serial.print("Encoder: TC- ("); Serial.print(code); Serial.println(") ");
       #endif
       break;
 
@@ -148,44 +148,46 @@ void loop() {
     case 800: // Encoder 2 CW "BB+"
       wheelState[2] = wheelState[2] & B11101111;
       #if DEBUG_ENCODERS
-        Serial.print("Encoder: TC Down ("); Serial.print(code); Serial.println(") ");
+        Serial.print("Encoder: BB+ ("); Serial.print(code); Serial.println(") ");
       #endif
       break;
 
      case 801: // Encoder 2 CCW "BB-"
       wheelState[2] = wheelState[2] & B11111101;
       #if DEBUG_ENCODERS
-        Serial.print("Encoder: TC Up ("); Serial.print(code); Serial.println(") ");
+        Serial.print("Encoder: BB- ("); Serial.print(code); Serial.println(") ");
       #endif
       break;
 
      case 899: // Encoder 2 Button
       #if DEBUG_ENCODERS
-        Serial.print("Encoder: TC Button ("); Serial.print(code); Serial.println(") ");
+        Serial.print("Encoder: BB Button ("); Serial.print(code); Serial.println(") ");
       #endif
       break;
 
-    case 900: // Encoder 3 CW "ABS+"
-      wheelState[2] = wheelState[2] & B11101111;
+    case 900: // Encoder 3 CW "R3 ABS+"
+      wheelState[1] = wheelState[1] & B01111111;
       #if DEBUG_ENCODERS
-        Serial.print("Encoder: TC Down ("); Serial.print(code); Serial.println(") ");
+        Serial.print("Encoder: ABS+ ("); Serial.print(code); Serial.println(") ");
       #endif
       break;
 
-     case 901: // Encoder 3 CCW "ABS-"
-      wheelState[2] = wheelState[2] & B11111101;
+     case 901: // Encoder 3 CCW "L3 ABS-"
+      wheelState[1] = wheelState[1] & B10111111;
       #if DEBUG_ENCODERS
-        Serial.print("Encoder: TC Up ("); Serial.print(code); Serial.println(") ");
+        Serial.print("Encoder: ABS- ("); Serial.print(code); Serial.println(") ");
       #endif
       break;
 
      case 999: // Encoder 3 Button
       #if DEBUG_ENCODERS
-        Serial.print("Encoder: TC Button ("); Serial.print(code); Serial.println(") ");
+        Serial.print("Encoder: ABS Button ("); Serial.print(code); Serial.println(") ");
       #endif
       break;
+      
   }
-  
+
+  //
   // Search for a key press
   //
   // scanButtonMatrix() returns a unique keyValue
