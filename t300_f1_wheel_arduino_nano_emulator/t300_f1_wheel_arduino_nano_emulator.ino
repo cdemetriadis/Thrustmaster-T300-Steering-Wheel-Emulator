@@ -6,14 +6,14 @@
 //Arduino pin 13 (SCK)        -> T300 Red wire (5)
 //Arduino +5V                 -> T300 Black wire (6) (it gives 3.3V, but must be connected into +5V socket on arduino uno side)
 
-#define     DEBUG true
+#define     DEBUG false
 #define     DEBUG_WHEEL false
-#define     DEBUG_ENCDOERS false
 
 // Button Matrix
-int         foundColumn = 0; // Active column
-int         keyValue = 0;
-int         debounce = 5; // Set this to the lowest value that gives the best result
+int         foundColumn = 0;
+int         buttonValue = 0;
+int         encoderValue = 0;
+int         debounce = 50; // Set this to the lowest value that gives the best result
 byte        wheelState[8]; // local push-buttons state saved here
 volatile    byte pos;
 
@@ -42,7 +42,8 @@ void resetVars() {
   wheelState[5] = B00000000; // CHRG steps
   wheelState[6] = B01100000;
   wheelState[7] = B01000000;
-  keyValue = 0;
+  buttonValue = 0;
+  encoderValue = 0;
 }
 
 // Setup Encoders
@@ -59,11 +60,6 @@ void setup(){
   
   // Interrupt for SS rising edge
   attachInterrupt (digitalPinToInterrupt(2), ss_rising, RISING); // Interrupt for Button Matrix
-
-  // Setup Encoders
-  encoders.addEncoder(1, 2, A3, 1, 700, 799); // (Encoder ID, Type: 2 or 4 step, Common Pin, Mode, Code, Button Code)
-  encoders.addEncoder(2, 2, A4, 1, 800, 899);
-  encoders.addEncoder(3, 2, A5, 1, 900, 999);
   
   #if DEBUG
     Serial.println("Thrustmaster Custom Wheel Emulator v1.0");
@@ -73,7 +69,6 @@ void setup(){
     Serial.print("x");
     Serial.print(colSize);
     Serial.println(" Button Matrix");
-    Serial.println();
   #endif
   
   // Row setup
@@ -101,6 +96,21 @@ void setup(){
       Serial.println(i);
     #endif
   }
+
+  
+  // Setup Encoders
+  //
+  // We are using CommonBusEncoder.h Library
+  encoders.addEncoder(1, 2, A3, 1, 700, 799); // (Encoder ID, Type: 2 or 4 step, Common Pin, Mode, Code, Button Code)
+  encoders.addEncoder(2, 2, A4, 1, 800, 899);
+  encoders.addEncoder(3, 2, A5, 1, 900, 999);
+  #if DEBUG
+    Serial.println();
+    Serial.println("Setup 3 Encoders");
+    Serial.println("Encoder 1: 700");
+    Serial.println("Encoder 2: 800");
+    Serial.println("Encoder 3: 900");
+  #endif
   
 }
 
@@ -119,154 +129,150 @@ void loop() {
 
   //
   // Initiate Encoders
-  int code = encoders.readAll();
+  encoderValue = encoders.readAll();
 
   //
   // Set the encoder action based on the code
-  switch (code) {
+  switch (encoderValue) {
 
     case 700: // Encoder 1 CW "TC+"
       wheelState[2] = wheelState[2] & B11111011;
-      #if DEBUG_ENCODERS
-        Serial.print("Encoder: TC+ ("); Serial.print(code); Serial.println(") ");
+      #if DEBUG
+        Serial.print("Encoder: TC+ ("); Serial.print(encoderValue); Serial.println(") ");
       #endif
       break;
 
      case 701: // Encoder 1 CCW "TC-"
       wheelState[2] = wheelState[2] & B11110111;
-      #if DEBUG_ENCODERS
-        Serial.print("Encoder: TC- ("); Serial.print(code); Serial.println(") ");
+      #if DEBUG
+        Serial.print("Encoder: TC- ("); Serial.print(encoderValue); Serial.println(") ");
       #endif
       break;
 
      case 799: // Encoder 1 Button
-      #if DEBUG_ENCODERS
-        Serial.print("Encoder: TC Button ("); Serial.print(code); Serial.println(") ");
+      #if DEBUG
+        Serial.print("Encoder: TC Button ("); Serial.print(encoderValue); Serial.println(") ");
       #endif
       break;
 
     case 800: // Encoder 2 CW "BB+"
       wheelState[2] = wheelState[2] & B11101111;
-      #if DEBUG_ENCODERS
-        Serial.print("Encoder: BB+ ("); Serial.print(code); Serial.println(") ");
+      #if DEBUG
+        Serial.print("Encoder: BB+ ("); Serial.print(encoderValue); Serial.println(") ");
       #endif
       break;
 
      case 801: // Encoder 2 CCW "BB-"
       wheelState[2] = wheelState[2] & B11111101;
-      #if DEBUG_ENCODERS
-        Serial.print("Encoder: BB- ("); Serial.print(code); Serial.println(") ");
+      #if DEBUG
+        Serial.print("Encoder: BB- ("); Serial.print(encoderValue); Serial.println(") ");
       #endif
       break;
 
      case 899: // Encoder 2 Button
-      #if DEBUG_ENCODERS
-        Serial.print("Encoder: BB Button ("); Serial.print(code); Serial.println(") ");
+      #if DEBUG
+        Serial.print("Encoder: BB Button ("); Serial.print(encoderValue); Serial.println(") ");
       #endif
       break;
 
     case 900: // Encoder 3 CW "R3 ABS+"
       wheelState[1] = wheelState[1] & B01111111;
-      #if DEBUG_ENCODERS
-        Serial.print("Encoder: ABS+ ("); Serial.print(code); Serial.println(") ");
+      #if DEBUG
+        Serial.print("Encoder: ABS+ ("); Serial.print(encoderValue); Serial.println(") ");
       #endif
       break;
 
      case 901: // Encoder 3 CCW "L3 ABS-"
       wheelState[1] = wheelState[1] & B10111111;
-      #if DEBUG_ENCODERS
-        Serial.print("Encoder: ABS- ("); Serial.print(code); Serial.println(") ");
+      #if DEBUG
+        Serial.print("Encoder: ABS- ("); Serial.print(encoderValue); Serial.println(") ");
       #endif
       break;
 
      case 999: // Encoder 3 Button
-      #if DEBUG_ENCODERS
-        Serial.print("Encoder: ABS Button ("); Serial.print(code); Serial.println(") ");
+      #if DEBUG
+        Serial.print("Encoder: ABS Button ("); Serial.print(encoderValue); Serial.println(") ");
       #endif
       break;
       
   }
 
   //
-  // Search for a key press
-  //
-  // scanButtonMatrix() returns a unique keyValue
+  // Initiate Button Matrix
   scanButtonMatrix();
 
   //
   // Set the button action based on the keyValue
-  switch (keyValue) {
+  switch (buttonValue) {
   
     case 74: // Triangle
       wheelState[0] = wheelState[0] & B10111111;
       #if DEBUG
-        Serial.print("Button: Triangle ("); Serial.print(keyValue); Serial.println(") ");
+        Serial.print("Button: Triangle ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
     
     case 86: // Square
       wheelState[0] = wheelState[0] & B01111111;
       #if DEBUG
-        Serial.print("Button: Square ("); Serial.print(keyValue); Serial.println(") ");
+        Serial.print("Button: Square ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
     
     case 99: // L1
       wheelState[0] = wheelState[0] & B11101111;
       #if DEBUG
-        Serial.print("Button: L1 ("); Serial.print(keyValue); Serial.println(") ");
+        Serial.print("Button: L1 ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
     
     case 113: // L2
       wheelState[1] = wheelState[1] & B11011111;
       #if DEBUG
-        Serial.print("Button: L2 ("); Serial.print(keyValue); Serial.println(") ");
+        Serial.print("Button: L2 ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
     
     case 128: // Share
       wheelState[1] = wheelState[1] & B11111011;
       #if DEBUG
-        Serial.print("Button: Share ("); Serial.print(keyValue); Serial.println(") ");
+        Serial.print("Button: Share ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
       
-    
-    
     case 87: // Circle
       wheelState[0] = wheelState[0] & B11111110;
       #if DEBUG
-        Serial.print("Button: Circle ("); Serial.print(keyValue); Serial.println(") ");
+        Serial.print("Button: Circle ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
       
     case 100: // Cross
       wheelState[1] = wheelState[1] & B11111101;
       #if DEBUG
-        Serial.print("Button: Cross ("); Serial.print(keyValue); Serial.println(") ");
+        Serial.print("Button: Cross ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
     
     case 114: // R1
       wheelState[0] = wheelState[0] & B11011111;
       #if DEBUG
-        Serial.print("Button: R1 ("); Serial.print(keyValue); Serial.println(") ");
+        Serial.print("Button: R1 ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
     
     case 129: // R2
       wheelState[1] = wheelState[1] & B11101111;
       #if DEBUG
-        Serial.print("Button: R2 ("); Serial.print(keyValue); Serial.println(") ");
+        Serial.print("Button: R2 ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
     
     case 145: // Options
       wheelState[1] = wheelState[1] & B11110111;
       #if DEBUG
-        Serial.print("Button: Options ("); Serial.print(keyValue); Serial.println(") ");
+        Serial.print("Button: Options ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
@@ -274,35 +280,35 @@ void loop() {
     case 116: // Up
       wheelState[2] = wheelState[2] & B11101111;
       #if DEBUG
-        Serial.print("Button: Up ("); Serial.print(keyValue); Serial.println(") ");
+        Serial.print("Button: Up ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
     
     case 131: // Down
       wheelState[2] = wheelState[2] & B11111101;
       #if DEBUG
-        Serial.print("Button: Down ("); Serial.print(keyValue); Serial.println(") ");
+        Serial.print("Button: Down ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
     
     case 147: // Left
       wheelState[2] = wheelState[2] & B11110111;
       #if DEBUG
-        Serial.print("Button: Left ("); Serial.print(keyValue); Serial.println(") ");
+        Serial.print("Button: Left ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
     
     case 164: // Right
       wheelState[2] = wheelState[2] & B11111011;
       #if DEBUG
-        Serial.print("Button: Right ("); Serial.print(keyValue); Serial.println(") ");
+        Serial.print("Button: Right ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
     
     case 182: // PS
       wheelState[1] = wheelState[1] & B11111110;
       #if DEBUG
-        Serial.print("Button: PS ("); Serial.print(keyValue); Serial.println(") ");
+        Serial.print("Button: PS ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
         
@@ -336,11 +342,10 @@ void scanButtonMatrix() {
     for (int colCounter=0; colCounter<colSize; colCounter++) {
       // Scan each pin in column
       foundColumn = digitalRead(colPin[colCounter]);
-      // If we find a COL:
-      // We set a keyValue, unique to each key press rowPin x colPin
+      // If we find a column
       if(foundColumn==0){
-        // Using a Cantor Pairing function we create unique numbers
-        keyValue = ( ( (rowPin[rowCounter]+colPin[colCounter]) * (rowPin[rowCounter]+colPin[colCounter]+1) ) / 2 + colPin[colCounter]);
+        // Using a Cantor Pairing function we create unique number
+        buttonValue = (((rowPin[rowCounter]+colPin[colCounter]) * (rowPin[rowCounter]+colPin[colCounter]+1)) / 2 + colPin[colCounter]);
       }
     }
   }
