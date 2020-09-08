@@ -33,6 +33,11 @@ int     colSize = sizeof(colPin)/sizeof(colPin[0]);
 // 3    6     |  113 L2         129 R2          164 Right
 // 4    7     |  128 Share      145 Options     182 PS
 
+
+// Setup Encoders
+CommonBusEncoders encoders(A0, A1, A2, 3); // (Pin A Bus, Pin B Bus, Button Bus, Number of encoders)
+
+
 void resetVars() {
   wheelState[0] = B11001111; // F1 wheel specific, and 5 Button
   wheelState[1] = B11111111; // 8 Buttons
@@ -45,9 +50,6 @@ void resetVars() {
   buttonValue = 0;
   encoderValue = 0;
 }
-
-// Setup Encoders
-CommonBusEncoders encoders(A0, A1, A2, 3); // (Pin A Bus, Pin B Bus, Button Bus, Number of encoders)
 
 void setup(){
   
