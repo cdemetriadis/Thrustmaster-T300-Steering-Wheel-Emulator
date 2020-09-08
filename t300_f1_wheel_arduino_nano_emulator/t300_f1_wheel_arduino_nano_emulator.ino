@@ -107,9 +107,9 @@ void setup(){
   #if DEBUG
     Serial.println();
     Serial.println("Setup 3 Encoders");
-    Serial.println("Encoder 1: 700");
-    Serial.println("Encoder 2: 800");
-    Serial.println("Encoder 3: 900");
+    Serial.println("Encoder 1 on A:A0, B:A1, S:A2, C:A3");
+    Serial.println("Encoder 2 on A:A0, B:A1, S:A2, C:A4");
+    Serial.println("Encoder 3 on A:A0, B:A1, S:A2, C:A5");
   #endif
   
 }
