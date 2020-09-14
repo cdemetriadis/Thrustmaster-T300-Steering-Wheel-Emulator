@@ -42,11 +42,6 @@ int     colSize = sizeof(colPin)/sizeof(colPin[0]);
 // 4    7     |  128 Share      145 Options     182 PS        245 ABS- (L3)
 // 5    15/A1 |  284 CB-L       309 CB-R        362 Center    449 ABS+ (R3)
 
-
-// Setup Encoders
-CommonBusEncoders encoders(A0, A1, A2, 3); // (Pin A Bus, Pin B Bus, Button Bus, Number of encoders)
-
-
 void resetVars() {
   wheelState[0] = B11001111; // F1 wheel specific, and 5 Button
   wheelState[1] = B11111111; // 8 Buttons
@@ -111,21 +106,6 @@ void setup(){
       Serial.println(i);
     #endif
   }
-
-
-  // Setup Encoders
-  //
-  // We are using CommonBusEncoder.h Library
-  encoders.addEncoder(1, 2, A3, 1, 700, 799); // (Encoder ID, Type: 2 or 4 step, Common Pin, Mode, Code, Button Code)
-  encoders.addEncoder(2, 2, A4, 1, 800, 899);
-  encoders.addEncoder(3, 2, A5, 1, 900, 999);
-  #if DEBUG
-    Serial.println();
-    Serial.println("Setup 3 Encoders");
-    Serial.println("Encoder 1 on A:A0, B:A1, S:A2, C:A3");
-    Serial.println("Encoder 2 on A:A0, B:A1, S:A2, C:A4");
-    Serial.println("Encoder 3 on A:A0, B:A1, S:A2, C:A5");
-  #endif
 
 }
 
