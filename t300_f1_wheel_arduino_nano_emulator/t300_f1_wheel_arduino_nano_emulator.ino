@@ -26,7 +26,7 @@ String      prevLine_1;
 String      prevLine_2;
 
 // Setup Button Matrix
-int     rowPin[] = {3, 4, 5, 6, 7, A1}; // Set pins for rows > OUTPUT
+int     rowPin[] = {4, 5, 6, 7, A1, A2}; // Set pins for rows > OUTPUT
 int     colPin[] = {8, 9, 11, A0}; // Set pins for columns, could also use Analog pins > INPUT_PULLUP
 int     rowSize = sizeof(rowPin)/sizeof(rowPin[0]);
 int     colSize = sizeof(colPin)/sizeof(colPin[0]);
@@ -35,12 +35,12 @@ int     colSize = sizeof(colPin)/sizeof(colPin[0]);
 //      Cols  |  0              1               2             4
 // Rows Pins  |  8              9               11            14/A0
 // -------------------------------------------------------------------------
-// 0    3     |  74 Triangle    87 Circle       116 Up        167 TC- (Up)
-// 1    4     |  86 Square      100 Cross       131 Down      185 TC+ (Down)
-// 2    5     |  99 L1          114 R1          147 left      204 BB- (Left)
-// 3    6     |  113 L2         129 R2          164 Right     224 BB+ (Right)
-// 4    7     |  128 Share      145 Options     182 PS        245 ABS- (L3)
-// 5    15/A1 |  284 CB-L       309 CB-R        362 Center    449 ABS+ (R3)
+// 0    4     |  86 Triangle    100 Circle      131 Up        185 TC- (Up)
+// 1    5     |  99 Square      114 Cross       147 Down      204 TC+ (Down)
+// 2    6     |  113 L1         129 R1          164 left      224 BB- (Left)
+// 3    7     |  128 L2         145 R2          182 Right     245 BB+ (Right)
+// 4    15/A1 |  284 Share      309 Options     362 PS        449 ABS- (L3)
+// 5    16/A2 |  308 CB-L       334 CB-R        389 Center    479 ABS+ (R3)
 
 void resetVars() {
   wheelState[0] = B11001111; // F1 wheel specific, and 5 Button
@@ -58,13 +58,14 @@ void setup(){
 
   resetVars();
 
-  Serial.begin(115200);    // Arduino debug console
+  Serial.begin(9600);    // Arduino debug console
   pinMode(MISO, OUTPUT); // Arduino is a slave device
   SPCR |= _BV(SPE);      // Enables the SPI when 1
   SPCR |= _BV(SPIE);     // Enables the SPI interrupt when 1
 
   // Interrupt for SS rising edge
   attachInterrupt (digitalPinToInterrupt(2), ss_rising, RISING); // Interrupt for Button Matrix
+
 
   lcd.init();
   lcd.backlight();
@@ -132,7 +133,7 @@ void loop() {
   // Set the encoder action based on the code
   switch (buttonValue) {
 
-    case 74: // Triangle
+    case 86: // Triangle
       wheelState[0] = wheelState[0] & B10111111;
       printDisplay("Triangle", 4);
       #if DEBUG
@@ -140,7 +141,7 @@ void loop() {
       #endif
       break;
 
-    case 86: // Square
+    case 99: // Square
       wheelState[0] = wheelState[0] & B01111111;
       printDisplay("Square", 5);
       #if DEBUG
@@ -148,7 +149,7 @@ void loop() {
       #endif
       break;
 
-    case 99: // L1
+    case 113: // L1
       wheelState[0] = wheelState[0] & B11011111;
       printDisplay("L1", 7);
       #if DEBUG
@@ -156,7 +157,7 @@ void loop() {
       #endif
       break;
 
-    case 113: // L2
+    case 128: // L2
       wheelState[1] = wheelState[1] & B11011111;
       printDisplay("L2", 7);
       #if DEBUG
@@ -164,7 +165,7 @@ void loop() {
       #endif
       break;
 
-    case 128: // Share
+    case 284: // Share
       wheelState[1] = wheelState[1] & B11111011;
       printDisplay("Share", 5);
       #if DEBUG
@@ -174,7 +175,7 @@ void loop() {
 
 
 
-    case 87: // Circle
+    case 100: // Circle
       wheelState[0] = wheelState[0] & B11111110;
       printDisplay("Circle", 5);
       #if DEBUG
@@ -182,7 +183,7 @@ void loop() {
       #endif
       break;
 
-    case 100: // Cross
+    case 114: // Cross
       wheelState[1] = wheelState[1] & B11111101;
       printDisplay("Cross", 5);
       #if DEBUG
@@ -190,7 +191,7 @@ void loop() {
       #endif
       break;
 
-    case 114: // R1
+    case 129: // R1
       wheelState[0] = wheelState[0] & B11101111;
       printDisplay("R1", 7);
       #if DEBUG
@@ -198,7 +199,7 @@ void loop() {
       #endif
       break;
 
-    case 129: // R2
+    case 145: // R2
       wheelState[1] = wheelState[1] & B11101111;
       printDisplay("R2", 7);
       #if DEBUG
@@ -206,7 +207,7 @@ void loop() {
       #endif
       break;
 
-    case 145: // Options
+    case 309: // Options
       wheelState[1] = wheelState[1] & B11110111;
       printDisplay("Options", 4);
       #if DEBUG
@@ -216,7 +217,7 @@ void loop() {
 
 
 
-    case 116: // Up
+    case 131: // Up
       wheelState[2] = wheelState[2] & B11101111; // DP-Up
       printDisplay("Up", 7);
       #if DEBUG
@@ -224,7 +225,7 @@ void loop() {
       #endif
       break;
 
-    case 131: // Down
+    case 147: // Down
       wheelState[2] = wheelState[2] & B11111101; // DP-Down
       printDisplay("Down", 6);
       #if DEBUG
@@ -232,7 +233,7 @@ void loop() {
       #endif
       break;
 
-    case 147: // Left
+    case 164: // Left
       wheelState[2] = wheelState[2] & B11110111; // DP-Left
       printDisplay("Left", 6);
       #if DEBUG
@@ -240,7 +241,7 @@ void loop() {
       #endif
       break;
 
-    case 164: // Right
+    case 182: // Right
       wheelState[2] = wheelState[2] & B11111011; // DP-Right
       printDisplay("Right", 5);
       #if DEBUG
@@ -248,17 +249,17 @@ void loop() {
       #endif
       break;
 
-    case 182: // PS
+    case 362: // PS
       wheelState[1] = wheelState[1] & B11111110;
-      printDisplay("PS", 7);
+      printDisplay("PlayStation", 2);
       #if DEBUG
         Serial.print("Button: PS ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 362: // Center
+    case 389: // Center/Cross
       wheelState[1] = wheelState[1] & B11111101; // Cross
-      printDisplay("Center", 5);
+      printDisplay("Center (X)", 3);
       #if DEBUG
         Serial.print("Button: Center ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
@@ -266,7 +267,7 @@ void loop() {
 
 
 
-    case 167: // TC- (Up)
+    case 185: // TC- (Up)
 //      wheelState[2] = wheelState[2] & B11101111; // DP-Up
       wheelState[3] = wheelState[3] & B11101111; // CHRG+
       printDisplay("TC-", 7);
@@ -275,7 +276,7 @@ void loop() {
       #endif
       break;
 
-    case 185: // TC+ (Down)
+    case 204: // TC+ (Down)
 //      wheelState[2] = wheelState[2] & B11111101; // DP-Down
       wheelState[3] = wheelState[3] & B11111101; // CHRG-
       printDisplay("TC+", 7);
@@ -284,7 +285,7 @@ void loop() {
       #endif
       break;
 
-    case 204: // BB- (Left)
+    case 224: // BB- (Left)
 //      wheelState[2] = wheelState[2] & B11110111; // DP-Left
       wheelState[3] = wheelState[3] & B11111011; // DIF IN+
       printDisplay("BB-", 7);
@@ -293,7 +294,7 @@ void loop() {
       #endif
       break;
 
-    case 224: // BB+ (Right)
+    case 245: // BB+ (Right)
 //      wheelState[2] = wheelState[2] & B11111011; // DP-Right
       wheelState[3] = wheelState[3] & B11110111; // DIF IN-
       printDisplay("BB+", 7);
@@ -302,7 +303,7 @@ void loop() {
       #endif
       break;
 
-    case 245: // ABS- (L3)
+    case 449: // ABS- (L3)
       wheelState[1] = wheelState[1] & B10111111; // Pump
       printDisplay("ABS-", 6);
       #if DEBUG
@@ -310,7 +311,7 @@ void loop() {
       #endif
       break;
 
-    case 449: // ABS+ (R3)
+    case 479: // ABS+ (R3)
       wheelState[1] = wheelState[1] & B01111111; // 1-
       printDisplay("ABS+", 6);
       #if DEBUG
@@ -319,14 +320,14 @@ void loop() {
       break;
 
 
-    case 284: // CAB-L Combined Action Button
+    case 308: // CAB-L Combined Action Button
       printDisplay("CAB-L");
       #if DEBUG
         Serial.print("Button: CAB-L ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 309: // CAB-R Combined Action Button
+    case 334: // CAB-R Combined Action Button
       printDisplay("CAB-R");
       #if DEBUG
         Serial.print("Button: CAB-R ("); Serial.print(buttonValue); Serial.println(") ");
@@ -359,13 +360,13 @@ void loop() {
 void printDisplay(String line_1="", int pos_1=0, String line_2="", int pos_2=0) {
   if (prevLine_1 != line_1 || prevLine_2 != line_2) {
     lcd.clear();
+    prevLine_1 = line_1;
+    prevLine_2 = line_2;
   }
   lcd.setCursor(pos_1, 0);
   lcd.print(line_1);
   lcd.setCursor(pos_2, 1);
   lcd.print(line_2);
-  prevLine_1 = line_1;
-  prevLine_2 = line_2;
 }
 
 void scanButtonMatrix() {
