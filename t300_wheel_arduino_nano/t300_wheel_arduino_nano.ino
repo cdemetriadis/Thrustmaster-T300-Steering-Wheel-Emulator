@@ -32,15 +32,15 @@ int     rowSize = sizeof(rowPin)/sizeof(rowPin[0]);
 int     colSize = sizeof(colPin)/sizeof(colPin[0]);
 
 // Button Matrix
-//      Cols  |  0              1               2             4
-// Rows Pins  |  8              9               11            14/A0
-// -------------------------------------------------------------------------
-// 0    4     |  86 Triangle    100 Circle      131 Up        185 TC- (Up)
-// 1    5     |  99 Square      114 Cross       147 Down      204 TC+ (Down)
-// 2    6     |  113 L1         129 R1          164 left      224 BB- (Left)
-// 3    7     |  128 L2         145 R2          182 Right     245 BB+ (Right)
-// 4    15/A1 |  284 Share      309 Options     362 PS        449 ABS- (L3)
-// 5    16/A2 |  308 CB-L       334 CB-R        389 Center    479 ABS+ (R3)
+//      Cols  |  0              1               2               4
+// Rows Pins  |  8              9               11              14/A0
+// ------------------------------------------------------------------------------
+// 0    4     |  86 Triangle    100 Circle      131 Up          185 TC- (Up)
+// 1    5     |  99 Square      114 Cross       147 Down        204 TC+ (Down)
+// 2    6     |  113 L1         129 R1          164 left        224 BB- (Left)
+// 3    7     |  128 L2         145 R2          182 Right       245 BB+ (Right)
+// 4    15/A1 |  284 Share      309 Options     362 PS          449 ABS- (L3)
+// 5    16/A2 |  308 CB-L       334 CB-R        389 Center (X)  479 ABS+ (R3)
 
 void resetVars() {
   wheelState[0] = B11001111; // F1 wheel specific, and 5 Button
@@ -109,7 +109,6 @@ void setup(){
   }
 
 }
-
 
 // Interrupt0 (external, pin 2) - prepare to start the transfer
 void ss_rising () {
