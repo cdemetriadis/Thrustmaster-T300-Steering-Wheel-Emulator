@@ -21,8 +21,8 @@ byte        wheelState[8]; // local push-buttons state saved here
 volatile    byte pos;
 
 void        printDisplay(String line_1="", int pos_1=0, String line_2="", int pos_2=0);
-int         curValue;
-int         curTime;
+int         curValue = -100;
+long        curTime = millis();
 String      prevLine_1;
 String      prevLine_2;
 
@@ -52,11 +52,10 @@ void resetVars() {
   wheelState[5] = B00000000; // CHRG steps
   wheelState[6] = B01100000;
   wheelState[7] = B01000000;
-  buttonValue = 0;
+  buttonValue = -100;
 }
 
 void setup(){
-
   
   resetVars();
 
@@ -372,7 +371,8 @@ void loop() {
     Serial.println();
   #endif
 
-  if (millis()-curTime > 750) {
+ 
+  if ((millis()-curTime) > 750) {
     printDisplay("Custom GT3 Wheel", 0, "v1.0", 6);
     curValue = buttonValue;
   }
