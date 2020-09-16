@@ -26,21 +26,21 @@ String      prevLine_1;
 String      prevLine_2;
 
 // Setup Button Matrix
-int     rowPin[] = {4, 5, 6, 7, A1, A2}; // Set pins for rows > OUTPUT
-int     colPin[] = {8, 9, 11, A0}; // Set pins for columns, could also use Analog pins > INPUT_PULLUP
+int     rowPin[] = {4, 5, 6, 7, 8, 9}; // Set pins for rows > OUTPUT
+int     colPin[] = {A0, A1, A2, A3}; // Set pins for columns, could also use Analog pins > INPUT_PULLUP
 int     rowSize = sizeof(rowPin)/sizeof(rowPin[0]);
 int     colSize = sizeof(colPin)/sizeof(colPin[0]);
 
 // Button Matrix
 //      Cols  |  0              1               2               4
-// Rows Pins  |  8              9               11              14/A0
+// Rows Pins  |  14/A0          15/A1           16/A2           17/A3
 // ------------------------------------------------------------------------------
-// 0    4     |  86 Triangle    100 Circle      131 Up          185 TC- (Up)
-// 1    5     |  99 Square      114 Cross       147 Down        204 TC+ (Down)
-// 2    6     |  113 L1         129 R1          164 left        224 BB- (Left)
-// 3    7     |  128 L2         145 R2          182 Right       245 BB+ (Right)
-// 4    15/A1 |  284 Share      309 Options     362 PS          449 ABS- (L3)
-// 5    16/A2 |  308 CB-L       334 CB-R        389 Center (X)  479 ABS+ (R3)
+// 0    4     |  185 Triangle   205 Circle      226 Up          248 TC- (Up)
+// 1    5     |  204 Square     225 Cross       247 Down        270 TC+ (Down)
+// 2    6     |  224 L1         246 R1          269 left        293 BB- (Left)
+// 3    7     |  245 L2         268 R2          292 Right       317 BB+ (Right)
+// 4    8     |  267 Share      291 Options     316 PS          342 ABS- (L3)
+// 5    9     |  290 CB-L       315 CB-R        341 Center (X)  368 ABS+ (R3) 
 
 void resetVars() {
   wheelState[0] = B11001111; // F1 wheel specific, and 5 Button
@@ -132,7 +132,7 @@ void loop() {
   // Set the encoder action based on the code
   switch (buttonValue) {
 
-    case 86: // Triangle
+    case 185: // Triangle
       wheelState[0] = wheelState[0] & B10111111;
       printDisplay("Triangle", 4);
       #if DEBUG
@@ -140,7 +140,7 @@ void loop() {
       #endif
       break;
 
-    case 99: // Square
+    case 204: // Square
       wheelState[0] = wheelState[0] & B01111111;
       printDisplay("Square", 5);
       #if DEBUG
@@ -148,7 +148,7 @@ void loop() {
       #endif
       break;
 
-    case 113: // L1
+    case 224: // L1
       wheelState[0] = wheelState[0] & B11011111;
       printDisplay("L1", 7);
       #if DEBUG
@@ -156,7 +156,7 @@ void loop() {
       #endif
       break;
 
-    case 128: // L2
+    case 245: // L2
       wheelState[1] = wheelState[1] & B11011111;
       printDisplay("L2", 7);
       #if DEBUG
@@ -164,7 +164,7 @@ void loop() {
       #endif
       break;
 
-    case 284: // Share
+    case 267: // Share
       wheelState[1] = wheelState[1] & B11111011;
       printDisplay("Share", 5);
       #if DEBUG
@@ -172,9 +172,15 @@ void loop() {
       #endif
       break;
 
+    case 290: // CAB-L Combined Action Button
+      printDisplay("CAB-L");
+      #if DEBUG
+        Serial.print("Button: CAB-L ("); Serial.print(buttonValue); Serial.println(") ");
+      #endif
+      break;
 
 
-    case 100: // Circle
+    case 205: // Circle
       wheelState[0] = wheelState[0] & B11111110;
       printDisplay("Circle", 5);
       #if DEBUG
@@ -182,7 +188,7 @@ void loop() {
       #endif
       break;
 
-    case 114: // Cross
+    case 225: // Cross
       wheelState[1] = wheelState[1] & B11111101;
       printDisplay("Cross", 5);
       #if DEBUG
@@ -190,7 +196,7 @@ void loop() {
       #endif
       break;
 
-    case 129: // R1
+    case 246: // R1
       wheelState[0] = wheelState[0] & B11101111;
       printDisplay("R1", 7);
       #if DEBUG
@@ -198,7 +204,7 @@ void loop() {
       #endif
       break;
 
-    case 145: // R2
+    case 268: // R2
       wheelState[1] = wheelState[1] & B11101111;
       printDisplay("R2", 7);
       #if DEBUG
@@ -206,7 +212,7 @@ void loop() {
       #endif
       break;
 
-    case 309: // Options
+    case 291: // Options
       wheelState[1] = wheelState[1] & B11110111;
       printDisplay("Options", 4);
       #if DEBUG
@@ -214,9 +220,16 @@ void loop() {
       #endif
       break;
 
+    case 315: // CAB-R Combined Action Button
+      printDisplay("CAB-R");
+      #if DEBUG
+        Serial.print("Button: CAB-R ("); Serial.print(buttonValue); Serial.println(") ");
+      #endif
+      break;
 
 
-    case 131: // Up
+
+    case 226: // Up
       wheelState[2] = wheelState[2] & B11101111; // DP-Up
       printDisplay("Up", 7);
       #if DEBUG
@@ -224,7 +237,7 @@ void loop() {
       #endif
       break;
 
-    case 147: // Down
+    case 247: // Down
       wheelState[2] = wheelState[2] & B11111101; // DP-Down
       printDisplay("Down", 6);
       #if DEBUG
@@ -232,7 +245,7 @@ void loop() {
       #endif
       break;
 
-    case 164: // Left
+    case 269: // Left
       wheelState[2] = wheelState[2] & B11110111; // DP-Left
       printDisplay("Left", 6);
       #if DEBUG
@@ -240,7 +253,7 @@ void loop() {
       #endif
       break;
 
-    case 182: // Right
+    case 292: // Right
       wheelState[2] = wheelState[2] & B11111011; // DP-Right
       printDisplay("Right", 5);
       #if DEBUG
@@ -248,7 +261,7 @@ void loop() {
       #endif
       break;
 
-    case 362: // PS
+    case 316: // PS
       wheelState[1] = wheelState[1] & B11111110;
       printDisplay("PlayStation", 2);
       #if DEBUG
@@ -256,7 +269,7 @@ void loop() {
       #endif
       break;
 
-    case 389: // Center/Cross
+    case 341: // Center (X)
       wheelState[1] = wheelState[1] & B11111101; // Cross
       printDisplay("Center (X)", 3);
       #if DEBUG
@@ -266,7 +279,7 @@ void loop() {
 
 
 
-    case 185: // TC- (Up)
+    case 248: // TC- (Up)
 //      wheelState[2] = wheelState[2] & B11101111; // DP-Up
       wheelState[3] = wheelState[3] & B11101111; // CHRG+
       printDisplay("TC-", 7);
@@ -275,7 +288,7 @@ void loop() {
       #endif
       break;
 
-    case 204: // TC+ (Down)
+    case 270: // TC+ (Down)
 //      wheelState[2] = wheelState[2] & B11111101; // DP-Down
       wheelState[3] = wheelState[3] & B11111101; // CHRG-
       printDisplay("TC+", 7);
@@ -284,7 +297,7 @@ void loop() {
       #endif
       break;
 
-    case 224: // BB- (Left)
+    case 293: // BB- (Left)
 //      wheelState[2] = wheelState[2] & B11110111; // DP-Left
       wheelState[3] = wheelState[3] & B11111011; // DIF IN+
       printDisplay("BB-", 7);
@@ -293,7 +306,7 @@ void loop() {
       #endif
       break;
 
-    case 245: // BB+ (Right)
+    case 317: // BB+ (Right)
 //      wheelState[2] = wheelState[2] & B11111011; // DP-Right
       wheelState[3] = wheelState[3] & B11110111; // DIF IN-
       printDisplay("BB+", 7);
@@ -302,7 +315,7 @@ void loop() {
       #endif
       break;
 
-    case 449: // ABS- (L3)
+    case 342: // ABS- (L3)
       wheelState[1] = wheelState[1] & B10111111; // Pump
       printDisplay("ABS-", 6);
       #if DEBUG
@@ -310,7 +323,7 @@ void loop() {
       #endif
       break;
 
-    case 479: // ABS+ (R3)
+    case 368: // ABS+ (R3)
       wheelState[1] = wheelState[1] & B01111111; // 1-
       printDisplay("ABS+", 6);
       #if DEBUG
@@ -319,19 +332,30 @@ void loop() {
       break;
 
 
-    case 308: // CAB-L Combined Action Button
-      printDisplay("CAB-L");
+    case 700: // Enc Right
+//      wheelState[1] = wheelState[1] & B10111111; // Pump
+      printDisplay("Encoder Right", 1);
       #if DEBUG
-        Serial.print("Button: CAB-L ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("Encoder: Right ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 334: // CAB-R Combined Action Button
-      printDisplay("CAB-R");
+    case 800: // Enc Left
+//      wheelState[1] = wheelState[1] & B01111111; // 1-
+      printDisplay("Encoder Right", 1);
       #if DEBUG
-        Serial.print("Button: CAB-R ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("Encoder: Left ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
+
+    case 900: // Enc Press
+//      wheelState[1] = wheelState[1] & B01111111; // 1-
+      printDisplay("Encoder Press", 1);
+      #if DEBUG
+        Serial.print("Encoder: Press ("); Serial.print(buttonValue); Serial.println(") ");
+      #endif
+      break;
+
 
     default: // Reset if nothing is pressed
       break;
