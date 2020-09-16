@@ -21,7 +21,8 @@ byte        wheelState[8]; // local push-buttons state saved here
 volatile    byte pos;
 
 void        printDisplay(String line_1="", int pos_1=0, String line_2="", int pos_2=0);
-int         curValue = 9999;
+int         curValue;
+int         curTime;
 String      prevLine_1;
 String      prevLine_2;
 
@@ -56,6 +57,7 @@ void resetVars() {
 
 void setup(){
 
+  
   resetVars();
 
   Serial.begin(9600);    // Arduino debug console
@@ -123,6 +125,7 @@ ISR (SPI_STC_vect) {
 
 void loop() {
 
+//  Serial.println(millis());
   //
   // Initiate Button Matrix
   // This functions returns a buttonValue for each button
@@ -369,7 +372,7 @@ void loop() {
     Serial.println();
   #endif
 
-  if (curValue != buttonValue) {
+  if (millis()-curTime > 750) {
     printDisplay("Custom GT3 Wheel", 0, "v1.0", 6);
     curValue = buttonValue;
   }
@@ -390,6 +393,7 @@ void printDisplay(String line_1="", int pos_1=0, String line_2="", int pos_2=0) 
   lcd.print(line_1);
   lcd.setCursor(pos_2, 1);
   lcd.print(line_2);
+  curTime = millis();
 }
 
 void scanButtonMatrix() {
