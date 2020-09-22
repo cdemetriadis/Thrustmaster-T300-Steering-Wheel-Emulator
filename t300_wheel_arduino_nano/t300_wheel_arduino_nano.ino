@@ -11,7 +11,7 @@
 #define     DEBUG_WHEEL false // Debug wheel output
 
 // Setup LCD
-LiquidCrystal_I2C lcd(0x27, 16, 2);
+LiquidCrystal_I2C lcd(0x27, 16, 2); // Connects to 5V, GND, A4 (SDA), A5 (SCL)
 
 // Button Matrix
 int         foundColumn = 0;
@@ -20,9 +20,11 @@ int         debounce = 50; // Set this to the lowest value that gives the best r
 byte        wheelState[8]; // local push-buttons state saved here
 volatile    byte pos;
 
+bool        lcdBacklight = true; // Used for the LCD backlight toggle
 void        printDisplay(String line_1="", int pos_1=0, String line_2="", int pos_2=0);
 int         curValue = -100;
-long        curTime = millis();
+long        displayTime = millis(); // Used for delaying the screen message
+long        lcdTime = millis(); // Used for delaying the screen light toggle
 String      prevLine_1;
 String      prevLine_2;
 
@@ -41,7 +43,7 @@ int     colSize = sizeof(colPin)/sizeof(colPin[0]);
 // 2    6     |  224 L1         246 R1          269 left        293 BB- (Left)
 // 3    7     |  245 L2         268 R2          292 Right       317 BB+ (Right)
 // 4    8     |  267 Share      291 Options     316 PS          342 ABS- (L3)
-// 5    9     |  290 CB-L       315 CB-R        341 Center (X)  368 ABS+ (R3)
+// 5    9     |  290 CAB-L      315 CAB-R       341 Center (X)  368 ABS+ (R3)
 
 void resetVars() {
   wheelState[0] = B11001111; // F1 wheel specific, and 5 Button
@@ -55,7 +57,7 @@ void resetVars() {
   buttonValue = -100;
 }
 
-void setup(){
+void setup() {
 
   resetVars();
 
@@ -67,11 +69,11 @@ void setup(){
   // Interrupt for SS rising edge
   attachInterrupt (digitalPinToInterrupt(2), ss_rising, RISING); // Interrupt for Button Matrix
 
-  // Setup Display
+  // Setup Display & Init message
   lcd.init();
   lcd.backlight();
   lcd.clear();
-  printDisplay("Custom GT3 Wheel", 0, "v1.0", 6);
+  printDisplay("Loading...", 3);
 
   #if DEBUG_SETUP
     Serial.println("Thrustmaster Custom Wheel Emulator v1.0");
@@ -173,7 +175,7 @@ void loop() {
       #endif
       break;
 
-    case 290: // CAB-L Combined Action Button
+    case 290: // CAB-L Combined Action Button Left
       printDisplay("CAB-L");
       #if DEBUG_KEYS
         Serial.print("Button: CAB-L ("); Serial.print(buttonValue); Serial.println(") ");
@@ -221,8 +223,9 @@ void loop() {
       #endif
       break;
 
-    case 315: // CAB-R Combined Action Button
+    case 315: // CAB-R Combined Action Button Right
       printDisplay("CAB-R");
+      lcdBacklightToggle();
       #if DEBUG_KEYS
         Serial.print("Button: CAB-R ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
@@ -332,31 +335,6 @@ void loop() {
       #endif
       break;
 
-
-    case 700: // Enc Right
-//      wheelState[1] = wheelState[1] & B10111111; // Pump
-      printDisplay("Encoder Right", 1);
-      #if DEBUG_KEYS
-        Serial.print("Encoder: Right ("); Serial.print(buttonValue); Serial.println(") ");
-      #endif
-      break;
-
-    case 800: // Enc Left
-//      wheelState[1] = wheelState[1] & B01111111; // 1-
-      printDisplay("Encoder Right", 1);
-      #if DEBUG_KEYS
-        Serial.print("Encoder: Left ("); Serial.print(buttonValue); Serial.println(") ");
-      #endif
-      break;
-
-    case 900: // Enc Press
-//      wheelState[1] = wheelState[1] & B01111111; // 1-
-      printDisplay("Encoder Press", 1);
-      #if DEBUG_KEYS
-        Serial.print("Encoder: Press ("); Serial.print(buttonValue); Serial.println(") ");
-      #endif
-      break;
-
     default: // Reset if nothing is pressed
       break;
   }
@@ -370,7 +348,7 @@ void loop() {
   #endif
 
   // Reset Display if nothing is pressed for 750 millis
-  if ((millis()-curTime) > 750) {
+  if ((millis()-displayTime) > 750) {
     printDisplay("Custom GT3 Wheel", 0, "v1.0", 6);
     curValue = buttonValue;
   }
@@ -390,7 +368,7 @@ void printDisplay(String line_1="", int pos_1=0, String line_2="", int pos_2=0) 
     lcd.print(line_2);
     prevLine_1 = line_1;
     prevLine_2 = line_2;
-    curTime = millis();
+    displayTime = millis();
   }
 }
 
@@ -413,4 +391,17 @@ void scanButtonMatrix() {
       }
     }
   }
+}
+
+void lcdBacklightToggle() {
+  if ((millis()-lcdTime) > 750) {
+    if (lcdBacklight == false) {
+      lcd.backlight();
+      lcdBacklight = true;
+    } else {
+      lcd.noBacklight();
+      lcdBacklight = false;
+    }
+  }
+  lcdTime = millis();
 }
