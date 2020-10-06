@@ -1,38 +1,48 @@
 // Connect to Thrustmaster T300
 //
-// Arduino GND                  -> T300 Blue wire (2)
-// Arduino pin 12               -> T300 White wire (3) (data from wheel to base)
-// Arduino pin 10 + pin 2 (SS)  -> T300 Orange wire pin (4) (yes, on Arduino it's wired to two pins. 10 - SS, 2 - INT0)
-// Arduino pin 13 (SCK)         -> T300 Red wire (5)
-// Arduino +5V                  -> T300 Black wire (6) (it gives 3.3V, but must be connected into +5V socket on arduino uno side)
+// Arduino GND                        -> T300 Blue wire (2)
+// Arduino pin 12                     -> T300 White wire (3) (data from wheel to base)
+// Arduino pin 10 + pin 2 (SS)        -> T300 Orange wire pin (4) (yes, on Arduino it's wired to two pins. 10 - SS, 2 - INT0)
+// Arduino pin 13 (SCK)               -> T300 Red wire (5)
+// Arduino +5V                        -> T300 Black wire (6) (it gives 3.3V, but must be connected into +5V socket on arduino uno side)
 
-#define     DEBUG_SETUP true   // Debug Setup information
-#define     DEBUG_KEYS true    // Debug the button presses
-#define     DEBUG_WHEEL false   // Debug wheel output
+#define       DEBUG_SETUP false                       // Debug Setup information
+#define       DEBUG_KEYS false                        // Debug the button presses
+#define       DEBUG_WHEEL false                       // Debug wheel output
+
+#define       CAB_ACTION 0                            // Set the CAB action. 0 for BB, 1 for TC, 2 for ABS
+#define       CAB_STEPS 3                             // Set the CAB Steps. 
+
+// CAB Setup - Combined action buttons
+int           triggerCAB;
+int           triggerStepsIncrease;
+int           triggerStepsDecrease;
+
 
 // Button Matrix
-int         foundColumn = 0;
-int         buttonValue = 0;
-int         debounce = 100;      // Set this to the lowest value that gives the best result
-byte        wheelState[8];      // local push-buttons state saved here
-volatile    byte pos;
+int           foundColumn = 0;
+int           buttonValue = 0;
+int           debounce = 100;                           // Set this to the lowest value that gives the best result
+byte          wheelState[8];
+volatile      byte pos;
 
 // Setup Button Matrix
-int     rowPin[] = {4, 5, 6, 7, 8, 9}; // Set pins for rows > OUTPUT
-int     colPin[] = {A0, A1, A2, A3}; // Set pins for columns, could also use Analog pins > INPUT_PULLUP
-int     rowSize = sizeof(rowPin)/sizeof(rowPin[0]);
-int     colSize = sizeof(colPin)/sizeof(colPin[0]);
+int           rowPin[] = {4, 5, 6, 7, 8, 9};            // Set pins for rows > OUTPUT
+int           colPin[] = {A0, A1, A2, A3};              // Set pins for columns, could also use Analog pins > INPUT_PULLUP
+int           rowSize = sizeof(rowPin)/sizeof(rowPin[0]);
+int           colSize = sizeof(colPin)/sizeof(colPin[0]);
+
 
 // Button Matrix
 //      Cols  |  0              1               2               4
 // Rows Pins  |  14/A0          15/A1           16/A2           17/A3
-// ------------------------------------------------------------------------------
-// 0    4     |  185 Triangle   205 Circle      226 Up          248 TC- (Up)
-// 1    5     |  204 Square     225 Cross       247 Down        270 TC+ (Down)
-// 2    6     |  224 L1         246 R1          269 left        293 BB- (Left)
-// 3    7     |  245 L2         268 R2          292 Right       317 BB+ (Right)
+// -------------------------------------------------------------------------------
+// 0    4     |  185 Triangle   205 Circle      226 Up          248 BB+ (Up)
+// 1    5     |  204 Square     225 Cross       247 Down        270 BB- (Down)
+// 2    6     |  224 L1         246 R1          269 left        293 TC- (Left)
+// 3    7     |  245 L2         268 R2          292 Right       317 TC+ (Right)
 // 4    8     |  267 Share      291 Options     316 PS          342 ABS- (L3)
-// 5    9     |  290 CAB-L      315 CAB-R       341 Center (X)  368 ABS+ (R3)
+// 5    9     |  290 CAB-       315 CAB+        341 Center (X)  368 ABS+ (R3)
 
 void setup() {
 
@@ -95,6 +105,23 @@ ISR (SPI_STC_vect) {
   SPDR = wheelState[pos++]; // load the next byte to SPI output register and return.
 }
 
+
+int CABActionGuide[3][2][3] = {
+  { // BB
+    {270, 3, B10111111},   // D-Pad Down - wheelState[3] = wheelState[3] & B10111111;
+    {248, 3, B11110111}    // D-Pad Up - wheelState[3] = wheelState[3] & B11110111;
+  },
+  { // TC
+    {293, 3, B11011111},   // D-Pad Left - wheelState[3] = wheelState[3] & B11011111;
+    {317, 3, B11101111}    // D-Pad Right - wheelState[3] = wheelState[3] & B11101111;
+  },
+  { // ABS
+    {342, 1, B11111101},  // L3 - wheelState[1] = wheelState[1] & B11111101;
+    {368, 1, B11111110}   // R3 - wheelState[1] = wheelState[1] & B11111110;
+  }
+};
+
+
 void loop() {
 
   //
@@ -143,12 +170,16 @@ void loop() {
       break;
 
     case 290: // CAB-L Combined Action Button Left
-      // Do something here
+
+      triggerCAB = CAB_ACTION; // 0 for BB, 1 for TC, 2 for ABS
+      triggerStepsDecrease = CAB_STEPS; // 4 for x5
 
       #if DEBUG_KEYS
         Serial.print("Button: CAB-L ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
+
+
 
 
     case 205: // Flash (Circle)
@@ -187,13 +218,14 @@ void loop() {
       break;
 
     case 315: // CAB-R Combined Action Button Right
-      // Do something here
+      
+      triggerCAB = CAB_ACTION; // 0 for BB, 1 for TC, 2 for ABS
+      triggerStepsIncrease = CAB_STEPS; // 4 for x5
 
       #if DEBUG_KEYS
         Serial.print("Button: CAB-R ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
-
 
 
     case 226: // D-Pad Up
@@ -285,7 +317,19 @@ void loop() {
     default: // Reset if nothing is pressed
       break;
   }
+  
+  
+  // CAB Trigger 
+  if (triggerStepsIncrease > 0) {
+    wheelState[CABActionGuide[CAB_ACTION][1][1]] = wheelState[CABActionGuide[CAB_ACTION][1][1]] & CABActionGuide[CAB_ACTION][1][2];
+    triggerStepsIncrease--;
+  }
+  if (triggerStepsDecrease > 0) {
+    wheelState[CABActionGuide[CAB_ACTION][0][1]] = wheelState[CABActionGuide[CAB_ACTION][0][1]] & CABActionGuide[CAB_ACTION][0][2];
+    triggerStepsDecrease--;
+  }
 
+  
   #if DEBUG_WHEEL
     for (int i = 0; i < 8; i++) {
       Serial.print(wheelState[i], BIN);
