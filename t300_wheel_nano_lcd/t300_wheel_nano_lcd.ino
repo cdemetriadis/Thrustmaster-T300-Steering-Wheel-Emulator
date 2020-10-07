@@ -1,3 +1,4 @@
+
 // Connect to Thrustmaster T300
 //
 // Arduino GND                        -> T300 Blue wire (2)
@@ -8,14 +9,15 @@
 
 #include      <EEPROM.h>                              // Load EEPROM library for storing settings
 #include      <LiquidCrystal_I2C.h>                   // Load the Liquid Crystal Display library
-#include      <i2cEncoderMiniLib.h>                   // I2C Encoder Library
-
+#include      <i2cEncoderMiniLib.h>                   // Load I2C Encoder Library
+#include      <TimeLib.h>                             // Load Time Library
+#include      <DS1307RTC.h>                           // Load the DS1307 RTC Library
+ 
 #define       DEBUG_SETUP false                       // Debug Setup information
 #define       DEBUG_KEYS false                        // Debug the button presses
 #define       DEBUG_WHEEL false                       // Debug wheel output
 #define       MESSAGE_DURATION 750                    // Duration of the messages on the screen
-#define       MESSAGE_DEFAULT_1 "GT Challenge"
-#define       MESSAGE_DEFAULT_2 "~Menu"
+#define       DEBOUNCE 50                             // Set this to the lowest value that gives the best result
 
 #define       LOADING "Loading..."
 #define       SELECT_OPTION " Select Option:"
@@ -26,7 +28,8 @@
 #define       DISPLAY_KEYPRESS_ON "~Disp.Keypress"
 #define       DISPLAY_KEYPRESS_OFF " Disp.Keypress"
 #define       DISPLAY_STATUS_ON "~Display Off"
-#define       DISPLAY_STATUS_OFF "Display Off"
+#define       DISPLAY_STATUS_OFF " Display Off"
+#define       DISPLAY_RUNTIME_ON "~Display Runtime"
 #define       ACTION_OFF " Action:     "
 #define       ACTION_ON "~Action:     "
 #define       STEPS_ON "~Steps:       "
@@ -39,7 +42,7 @@
 // Setup EEPROM
 bool          DISPLAY_MODE = EEPROM.read(0);          // Retrieve the display output mode. 'true:1' for Playstation, 'false:0' for Wheel
 bool          DISPLAY_KEYS = EEPROM.read(1);          // Retrieve the display keypress option. 'true:1' on, 'false:0' off
-bool          DISPLAY_STATUS = EEPROM.read(3);        // Retrieve the display status (on or off)
+bool          DISPLAY_STATUS = EEPROM.read(3);        // Retrieve the display status. 'true:1' on, 'false:0' off
 int           CAB_ACTION = EEPROM.read(4);            // Retrieve the CAB action
 int           CAB_STEPS = EEPROM.read(5);             // Retrieve the CAB Steps
 
@@ -50,6 +53,12 @@ String        prevLine_1;
 String        prevLine_2;
 void          printDisplay(String line_1="", int pos_1=0, String line_2="", int pos_2=0);
 unsigned long displayTime = millis();                 // Used for delaying the screen message
+
+
+// Setup Real Time Clock
+tmElements_t  tm;
+String        getTime;
+String        getDate;
 
 
 // Menu Navigation Setup
@@ -67,7 +76,6 @@ int           triggerStepsDecrease;
 // Button Matrix
 int           foundColumn = 0;
 int           buttonValue = 0;
-int           debounce = 50;                           // Set this to the lowest value that gives the best result
 byte          wheelState[8];
 volatile      byte pos;
 
@@ -560,17 +568,17 @@ void loop() {
     Serial.println();
   #endif
 
-
+  
   // Reset Display if nothing is pressed for the MESSAGE_DURATION
   if (menu == 0) {
     if ((millis()-displayTime) > MESSAGE_DURATION) {
-      printDisplay(MESSAGE_DEFAULT_1, 0, MESSAGE_DEFAULT_2, 0);
+      showMenu();
       curValue = buttonValue;
     }
   }
   
   // Set a delay and reset the keyValue to something that will never match an exisitng keyValue
-  delay(debounce);
+  delay(DEBOUNCE);
   resetVars();
 
 }
@@ -619,14 +627,21 @@ void printDisplay(String line_1="", int pos_1=0, String line_2="", int pos_2=0) 
     prevLine_2 = line_2;
     displayTime = millis();
   }
-  if (menu == 0) {
-    displayRuntime();
-  }
+//  if (menu == 0) {
+//    displayRuntime();
+//    showRTC();
+//  }
 }
 
 void displayRuntime() {
-  int runtimeColumn = 8;
-  int runtimeRow = 1;
+  
+  lcd.clear();
+  int runtimeColumn = 4;
+  int runtimeRow = 0;
+  
+  prevLine_1 = " ";
+  prevLine_2 = " ";
+  displayTime = millis();
 
   unsigned long allSeconds=millis()/1000;
   int runHours= allSeconds/3600;
@@ -675,7 +690,7 @@ void displayRuntime() {
 void showMenu() {
 
   if (menu == 1) { // Main Menu
-    maxPages = 4;
+    maxPages = 5;
     switch (menuPage) {
       case 1:
         printDisplay(SELECT_OPTION, 0, CAB_ON, 0);
@@ -688,6 +703,10 @@ void showMenu() {
         break;
       case 4:
         printDisplay(DISPLAY_KEYPRESS_OFF, 0, DISPLAY_STATUS_ON, 0);
+        break;
+      case 5:
+        printDisplay(DISPLAY_STATUS_OFF, 0, DISPLAY_RUNTIME_ON, 0);
+        break;
     }
   } else if (menu == 2) { // CAB Menu
     maxPages = 3;
@@ -703,14 +722,16 @@ void showMenu() {
         break;
     }
   } else {
-    printDisplay(MESSAGE_DEFAULT_1, 0, MESSAGE_DEFAULT_2, 0);
+    getDateTime();
+    String message_line = "~Menu      " + getTime;
+    printDisplay(getDate, 0, message_line, 0);
   }
-  delay(debounce);
+  delay(DEBOUNCE);
 };
 
 void displayNext() {
   (menuPage >= maxPages) ? menuPage = 1 : menuPage++;
-  delay(debounce);
+  delay(DEBOUNCE);
   showMenu();
 }
 
@@ -735,6 +756,14 @@ void displaySelect() {
     resetMenu();
   }
 
+  if (menu == 1 && menuPage == 5) { // Display Runtime
+    displayRuntime();
+    delay(MESSAGE_DURATION);
+//    menu = 1;
+//    menuPage = 5;
+    showMenu();
+  }
+
   if (menu == 2 && menuPage == 2) { // CAB Action Select
     setCABAction();
     showMenu();
@@ -754,7 +783,7 @@ void setCABAction() {
     CAB_ACTION++;
   }
   EEPROM.write(4, CAB_ACTION);
-  delay(debounce);
+  delay(DEBOUNCE);
 }
 
 void setCABSteps () {
@@ -764,10 +793,10 @@ void setCABSteps () {
     CAB_STEPS++;
   }
   EEPROM.write(5, CAB_STEPS);
-  delay(debounce);
+  delay(DEBOUNCE);
 }
 
-void  toggleBacklight() {
+void toggleBacklight() {
   printDisplay(DISPLAY_STATUS_OFF, 2);
   delay(MESSAGE_DURATION);
   lcd.noDisplay();
@@ -808,39 +837,31 @@ void resetMenu() {
   menu = 0;
 }
 
-/*
+void getDateTime() {
+  
+  String months[13] = {"", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+  String days[8] = {"", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+  String tm_hour; 
+  String tm_minute;
+  String tm_date = String(tm.Day);
+  
+  if (RTC.read(tm)) {
+    if (tm.Hour<10) {
+      tm_hour = "0" + String(tm.Hour);
+    } else {
+      tm_hour = String(tm.Hour);
+    }
+    if (tm.Minute<10) {
+      tm_minute = "0" + String(tm.Minute);
+    } else {
+      tm_minute = String(tm.Minute);
+    }
 
-0: Home Screen
-
-1: CAB
-    Action: BB | TC | ABS
-    Reps: x1 | x2 | x3 | x4 | x5
-
-2. Display Mode: PS | Wheel
-3. Display Keypress: On | Off
-4. Display Off: Off
-
-
-
-*/
-
-//String defaultMessage[20] = {
-//  {"GT Challenge"},
-//  {"Lexus RC F GT3"},
-//  {"BMW M6 GT3"},
-//  {"Lambohrghini Huracan GT3 EVO"},
-//  {"Nissan GT-R Nismo GT3"},
-//  {"Audi R8 LMS GT3 Evo"},
-//  {"Bentley Continental GT3"},
-//  {"McLaren 720S GT3"},
-//  {"Porsche 911 II GT3 R"},
-//  {"Mercedes AMG GT3"},
-//  {"Aston Martin V8 Vantage GT3"},
-//  {"Ferrari 488 GT3"},
-//  {"Ginetta G55 GT4"},
-//  {"Chevrolet Camaro GT4"},
-//  {"Mercedes AMG GT4"},
-//  {"Aston Martin V8 Vantage GT4"},
-//  {"BMW M4 GT4"},
-//  {"Porsche 718 Cayman GT4"}
-//};
+    getDate = days[tm.Wday] + " " + tm_date + " " + months[tm.Month];
+    getTime = tm_hour + ":" + tm_minute;
+  } else {
+    getDate = "Clock error!";
+    getTime = "00:00";
+  }
+ 
+}
