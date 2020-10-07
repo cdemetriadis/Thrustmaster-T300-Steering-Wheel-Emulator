@@ -857,7 +857,7 @@ void getDateTime() {
       tm_minute = String(tm.Minute);
     }
 
-    getDate = days[tm.Wday] + " " + tm_date + " " + months[tm.Month];
+    getDate = days[tm.Wday] + " " + months[tm.Month] + " " + tm_date;
     getTime = tm_hour + ":" + tm_minute;
   } else {
     getDate = "Clock error!";
