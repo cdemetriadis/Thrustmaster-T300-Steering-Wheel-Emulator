@@ -6,6 +6,9 @@
 // Arduino pin 13 (SCK)               -> T300 Red wire (5)
 // Arduino +5V                        -> T300 Black wire (6) (it gives 3.3V, but must be connected into +5V socket on arduino uno side)
 
+#include      <Wire.h>
+#include      <i2cEncoderMiniLib.h>                   // Load I2C Encoder Library
+
 #define       DEBUG_SETUP false                       // Debug Setup information
 #define       DEBUG_KEYS false                        // Debug the button presses
 #define       DEBUG_WHEEL false                       // Debug wheel output
@@ -17,6 +20,13 @@
 int           triggerCAB;
 int           triggerStepsIncrease;
 int           triggerStepsDecrease;
+
+
+// Initialize Encoders
+const int     IntPin = 3;
+i2cEncoderMiniLib encoderBB(0x20);
+//i2cEncoderMiniLib encoderTC(0x20); <-- SETUP ADDRESS
+//i2cEncoderMiniLib encoderABS(0x20); <-- SETUP ADDRESS
 
 
 // Button Matrix
@@ -55,6 +65,24 @@ void setup() {
 
   // Interrupt for SS rising edge
   attachInterrupt (digitalPinToInterrupt(2), ss_rising, RISING); // Interrupt for Button Matrix
+
+  
+  // Setup Encoders
+  pinMode(IntPin, INPUT);
+//  encoderBB.reset();
+//  encoderBB.begin(i2cEncoderMiniLib::RMOD_X1 );
+  encoderBB.onIncrement = encoderBB_increment;
+  encoderBB.onDecrement = encoderBB_decrement;
+//  encoderTC.reset();
+//  encoderTC.begin(i2cEncoderMiniLib::RMOD_X1 );
+//  encoderTC.onIncrement = encoderTC_increment;
+//  encoderTC.onDecrement = encoderTC_decrement;
+//  encoderABS.reset();
+//  encoderABS.begin(i2cEncoderMiniLib::RMOD_X1 );
+//  encoderABS.onIncrement = encoderABS_increment;
+//  encoderABS.onDecrement = encoderABS_decrement;
+  encoderBB.autoconfigInterrupt();
+  
  
   #if DEBUG_SETUP
     Serial.println("Thrustmaster Custom Wheel Emulator v1.0");
@@ -123,6 +151,12 @@ int CABActionGuide[3][2][3] = {
 
 
 void loop() {
+
+
+  if (digitalRead(IntPin) == LOW) {
+    /* Check the status of the encoder and call the callback */
+    encoderBB.updateStatus();
+  }
 
   //
   // Initiate Button Matrix
@@ -354,6 +388,26 @@ void resetVars() {
   wheelState[6] = B01100000;
   wheelState[7] = B01000000;
   buttonValue = -100;
+}
+
+
+void encoderBB_decrement(i2cEncoderMiniLib* obj) {
+  buttonValue = 270;
+}
+void encoderBB_increment(i2cEncoderMiniLib* obj) {
+  buttonValue = 248;
+}
+void encoderTC_decrement(i2cEncoderMiniLib* obj) {
+  buttonValue = 293;
+}
+void encoderTC_increment(i2cEncoderMiniLib* obj) {
+  buttonValue = 317;
+}
+void encoderABS_decrement(i2cEncoderMiniLib* obj) {
+  buttonValue = 342;
+}
+void encoderABS_increment(i2cEncoderMiniLib* obj) {
+  buttonValue = 368;
 }
 
 void scanButtonMatrix() {
