@@ -1,4 +1,3 @@
-
 // Connect to Thrustmaster T300
 //
 // Arduino GND                        -> T300 Blue wire (2)
@@ -45,6 +44,14 @@ bool          DISPLAY_KEYS = EEPROM.read(1);          // Retrieve the display ke
 bool          DISPLAY_STATUS = EEPROM.read(3);        // Retrieve the display status. 'true:1' on, 'false:0' off
 int           CAB_ACTION = EEPROM.read(4);            // Retrieve the CAB action
 int           CAB_STEPS = EEPROM.read(5);             // Retrieve the CAB Steps
+
+
+// Initialize Encoders
+const int     IntPin = 3;
+i2cEncoderMiniLib encoderBB(0x20);
+//i2cEncoderMiniLib encoderTC(0x20); <-- SETUP ADDRESS
+//i2cEncoderMiniLib encoderABS(0x20); <-- SETUP ADDRESS
+
 
 // Setup LCD & vars
 LiquidCrystal_I2C lcd(0x27, 16, 2);                   // Connects to 3.3V, GND, A4 (SDA), A5 (SCL)
@@ -112,6 +119,24 @@ void setup() {
 
   // Interrupt for SS rising edge
   attachInterrupt (digitalPinToInterrupt(2), ss_rising, RISING); // Interrupt for Button Matrix
+
+  
+  // Setup Encoders
+  pinMode(IntPin, INPUT);
+//  encoderBB.reset();
+//  encoderBB.begin(i2cEncoderMiniLib::RMOD_X1 );
+  encoderBB.onIncrement = encoderBB_increment;
+  encoderBB.onDecrement = encoderBB_decrement;
+//  encoderTC.reset();
+//  encoderTC.begin(i2cEncoderMiniLib::RMOD_X1 );
+//  encoderTC.onIncrement = encoderTC_increment;
+//  encoderTC.onDecrement = encoderTC_decrement;
+//  encoderABS.reset();
+//  encoderABS.begin(i2cEncoderMiniLib::RMOD_X1 );
+//  encoderABS.onIncrement = encoderABS_increment;
+//  encoderABS.onDecrement = encoderABS_decrement;
+  encoderBB.autoconfigInterrupt();
+
 
   // Setup Display & Init message
   lcd.init();
@@ -209,6 +234,12 @@ int CABActionGuide[3][2][3] = {
 };
 
 void loop() {
+
+
+  if (digitalRead(IntPin) == LOW) {
+    /* Check the status of the encoder and call the callback */
+    encoderBB.updateStatus();
+  }
 
   //
   // Initiate Button Matrix
@@ -496,7 +527,7 @@ void loop() {
       break;
 
 
-    case 131: // Done (Display)
+    case 131: // Menu (Display)
       if (DISPLAY_STATUS) {
         if (menu == 1) {
           resetMenu();
@@ -627,10 +658,25 @@ void printDisplay(String line_1="", int pos_1=0, String line_2="", int pos_2=0) 
     prevLine_2 = line_2;
     displayTime = millis();
   }
-//  if (menu == 0) {
-//    displayRuntime();
-//    showRTC();
-//  }
+}
+
+void encoderBB_decrement(i2cEncoderMiniLib* obj) {
+  buttonValue = 270;
+}
+void encoderBB_increment(i2cEncoderMiniLib* obj) {
+  buttonValue = 248;
+}
+void encoderTC_decrement(i2cEncoderMiniLib* obj) {
+  buttonValue = 293;
+}
+void encoderTC_increment(i2cEncoderMiniLib* obj) {
+  buttonValue = 317;
+}
+void encoderABS_decrement(i2cEncoderMiniLib* obj) {
+  buttonValue = 342;
+}
+void encoderABS_increment(i2cEncoderMiniLib* obj) {
+  buttonValue = 368;
 }
 
 void displayRuntime() {
@@ -759,8 +805,6 @@ void displaySelect() {
   if (menu == 1 && menuPage == 5) { // Display Runtime
     displayRuntime();
     delay(MESSAGE_DURATION);
-//    menu = 1;
-//    menuPage = 5;
     showMenu();
   }
 
