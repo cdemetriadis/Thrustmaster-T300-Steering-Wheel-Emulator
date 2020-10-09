@@ -306,25 +306,25 @@ void loop() {
       CAB_ACTION = analogRead(6);
       CAB_STEPS = analogRead(7);
       
-      if (CAB_ACTION > 520 && CAB_ACTION < 560) {
+      if (CAB_ACTION > 520 && CAB_ACTION < 540) {
         triggerCAB = 0;
-      } else if (CAB_ACTION > 610 && CAB_ACTION < 650) {
+      } else if (CAB_ACTION > 550 && CAB_ACTION < 565) {
         triggerCAB = 1;
-      } else if (CAB_ACTION > 660 && CAB_ACTION < 700) {
+      } else if (CAB_ACTION > 570 && CAB_ACTION < 590) {
         triggerCAB = 2;
       }
 
-      if (CAB_STEPS > 520 && CAB_STEPS < 560) {
+      if (CAB_STEPS > 530 && CAB_STEPS < 540) {
         triggerStepsDecrease = 1;
-      } else if (CAB_STEPS > 610 && CAB_STEPS < 650) {
+      } else if (CAB_STEPS > 550 && CAB_STEPS < 565) {
         triggerStepsDecrease = 2;
-      } else if (CAB_STEPS > 660 && CAB_STEPS < 700) {
+      } else if (CAB_STEPS > 570 && CAB_STEPS < 590) {
         triggerStepsDecrease = 3;
-      } else if (CAB_STEPS > 730 && CAB_STEPS < 770) {
+      } else if (CAB_STEPS > 595 && CAB_STEPS < 615) {
         triggerStepsDecrease = 4;
-      } else if (CAB_STEPS > 790 && CAB_STEPS < 820) {
+      } else if (CAB_STEPS > 620 && CAB_STEPS < 628) {
         triggerStepsDecrease = 5;
-      } else if (CAB_STEPS > 830 && CAB_STEPS < 870) {
+      } else if (CAB_STEPS > 630 && CAB_STEPS < 640) {
         triggerStepsDecrease = 6;
       }
 
@@ -399,25 +399,25 @@ void loop() {
       CAB_ACTION = analogRead(6);
       CAB_STEPS = analogRead(7);
 
-      if (CAB_ACTION >520 && CAB_ACTION < 560) {
+      if (CAB_ACTION > 520 && CAB_ACTION < 540) {
         triggerCAB = 0;
-      } else if (CAB_ACTION >610 && CAB_ACTION < 650) {
+      } else if (CAB_ACTION > 550 && CAB_ACTION < 565) {
         triggerCAB = 1;
-      } else if (CAB_ACTION >660 && CAB_ACTION < 700) {
+      } else if (CAB_ACTION > 570 && CAB_ACTION < 590) {
         triggerCAB = 2;
       }
-      
-      if (CAB_STEPS > 520 && CAB_STEPS < 560) {
+
+      if (CAB_STEPS > 530 && CAB_STEPS < 540) {
         triggerStepsIncrease = 1;
-      } else if (CAB_STEPS > 610 && CAB_STEPS < 650) {
+      } else if (CAB_STEPS > 550 && CAB_STEPS < 565) {
         triggerStepsIncrease = 2;
-      } else if (CAB_STEPS > 660 && CAB_STEPS < 700) {
+      } else if (CAB_STEPS > 570 && CAB_STEPS < 590) {
         triggerStepsIncrease = 3;
-      } else if (CAB_STEPS > 730 && CAB_STEPS < 770) {
+      } else if (CAB_STEPS > 595 && CAB_STEPS < 615) {
         triggerStepsIncrease = 4;
-      } else if (CAB_STEPS > 790 && CAB_STEPS < 820) {
+      } else if (CAB_STEPS > 620 && CAB_STEPS < 628) {
         triggerStepsIncrease = 5;
-      } else if (CAB_STEPS > 830 && CAB_STEPS < 870) {
+      } else if (CAB_STEPS > 630 && CAB_STEPS < 640) {
         triggerStepsIncrease = 6;
       }
 
