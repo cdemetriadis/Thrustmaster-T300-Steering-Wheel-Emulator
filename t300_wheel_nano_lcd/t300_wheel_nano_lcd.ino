@@ -308,7 +308,7 @@ void loop() {
     case 290: // CAB-L Combined Action Button Left
       
       triggerCAB = CAB_ACTION; // 0 for BB, 1 for TC, 2 for ABS
-      triggerStepsDecrease = CAB_STEPS+1; // 4 for x5
+      triggerStepsDecrease = triggerStepsDecrease+CAB_STEPS+1; // 4 for x5
 
       if (DISPLAY_KEYS) {
         printDisplay("CAB-L: "+CABActionMap[CAB_ACTION]+"- "+CABStepsMap[CAB_STEPS], 1);
@@ -379,7 +379,7 @@ void loop() {
     case 315: // CAB-R Combined Action Button Right
       
       triggerCAB = CAB_ACTION; // 0 for BB, 1 for TC, 2 for ABS
-      triggerStepsIncrease = CAB_STEPS+1; // 4 for x5
+      triggerStepsIncrease = triggerStepsIncrease+CAB_STEPS+1; // 4 for x5
 
       if (DISPLAY_KEYS) {
         printDisplay("CAB-R: "+CABActionMap[CAB_ACTION]+"+ "+CABStepsMap[CAB_STEPS], 1);

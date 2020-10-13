@@ -12,11 +12,11 @@
 #include      <TimeLib.h>                             // Load Time Library
 #include      <DS1307RTC.h>                           // Load the DS1307 RTC Library
  
-#define       DEBUG_SETUP false                       // Debug Setup information
+#define       DEBUG_SETUP true                       // Debug Setup information
 #define       DEBUG_KEYS false                        // Debug the button presses
-#define       DEBUG_WHEEL false                       // Debug wheel output
+#define       DEBUG_WHEEL true                       // Debug wheel output
 #define       MESSAGE_DURATION 750                    // Duration of the messages on the screen
-#define       DEBOUNCE 50                             // Set this to the lowest value that gives the best result
+#define       DEBOUNCE 150                             // Set this to the lowest value that gives the best result
 
 #define       LOADING "Loading..."
 #define       SELECT_OPTION " Select Option:"
@@ -68,8 +68,9 @@ int           maxPages = 1;
 
 // CAB Setup - Combined action buttons
 int           triggerCAB;
-int           triggerStepsIncrease;
-int           triggerStepsDecrease;
+int           triggerSteps = 0;
+int           triggerStepsIncrease = 0;
+int           triggerStepsDecrease = 0;
 int           CAB_ACTION;
 int           CAB_STEPS;
 
@@ -211,7 +212,9 @@ String CABStepsMap[] = {
   "x3",
   "x4",
   "x5",
-  "x6"
+  "x6",
+  "x7",
+  "x8"
 };
 
 int CABActionGuide[3][2][3] = {
@@ -302,31 +305,9 @@ void loop() {
       break;
 
     case 182: // 290 CAB-L Combined Action Button Left
-      
-      CAB_ACTION = analogRead(6);
-      CAB_STEPS = analogRead(7);
-      
-      if (CAB_ACTION > 520 && CAB_ACTION < 540) {
-        triggerCAB = 0;
-      } else if (CAB_ACTION > 550 && CAB_ACTION < 565) {
-        triggerCAB = 1;
-      } else if (CAB_ACTION > 570 && CAB_ACTION < 590) {
-        triggerCAB = 2;
-      }
 
-      if (CAB_STEPS > 530 && CAB_STEPS < 540) {
-        triggerStepsDecrease = 1;
-      } else if (CAB_STEPS > 550 && CAB_STEPS < 565) {
-        triggerStepsDecrease = 2;
-      } else if (CAB_STEPS > 570 && CAB_STEPS < 590) {
-        triggerStepsDecrease = 3;
-      } else if (CAB_STEPS > 595 && CAB_STEPS < 615) {
-        triggerStepsDecrease = 4;
-      } else if (CAB_STEPS > 620 && CAB_STEPS < 628) {
-        triggerStepsDecrease = 5;
-      } else if (CAB_STEPS > 630 && CAB_STEPS < 640) {
-        triggerStepsDecrease = 6;
-      }
+      triggerCAB = getCABAction();
+      triggerStepsDecrease = triggerStepsDecrease + getCABSteps();
 
       if (DISPLAY_KEYS) {
         printDisplay("CAB-L: "+CABActionMap[triggerCAB]+"- "+CABStepsMap[triggerStepsDecrease-1], 1);
@@ -396,30 +377,8 @@ void loop() {
 
     case 201: // 315 CAB-R Combined Action Button Right
 
-      CAB_ACTION = analogRead(6);
-      CAB_STEPS = analogRead(7);
-
-      if (CAB_ACTION > 520 && CAB_ACTION < 540) {
-        triggerCAB = 0;
-      } else if (CAB_ACTION > 550 && CAB_ACTION < 565) {
-        triggerCAB = 1;
-      } else if (CAB_ACTION > 570 && CAB_ACTION < 590) {
-        triggerCAB = 2;
-      }
-
-      if (CAB_STEPS > 530 && CAB_STEPS < 540) {
-        triggerStepsIncrease = 1;
-      } else if (CAB_STEPS > 550 && CAB_STEPS < 565) {
-        triggerStepsIncrease = 2;
-      } else if (CAB_STEPS > 570 && CAB_STEPS < 590) {
-        triggerStepsIncrease = 3;
-      } else if (CAB_STEPS > 595 && CAB_STEPS < 615) {
-        triggerStepsIncrease = 4;
-      } else if (CAB_STEPS > 620 && CAB_STEPS < 628) {
-        triggerStepsIncrease = 5;
-      } else if (CAB_STEPS > 630 && CAB_STEPS < 640) {
-        triggerStepsIncrease = 6;
-      }
+      triggerCAB = getCABAction();
+      triggerStepsIncrease = triggerStepsIncrease + getCABSteps();
 
       if (DISPLAY_KEYS) {
         printDisplay("CAB-R: "+CABActionMap[triggerCAB]+"+ "+CABStepsMap[triggerStepsIncrease-1], 1);
@@ -867,6 +826,36 @@ void toggleDisplayMode() {
 void resetMenu() {
   menuPage = 1;
   menu = 0;
+}
+
+int getCABAction() {
+  CAB_ACTION = analogRead(6);
+  if (CAB_ACTION > 520 && CAB_ACTION < 540) {
+    triggerCAB = 0;
+  } else if (CAB_ACTION > 550 && CAB_ACTION < 565) {
+    triggerCAB = 1;
+  } else if (CAB_ACTION > 570 && CAB_ACTION < 590) {
+    triggerCAB = 2;
+  }
+  return triggerCAB;
+}
+
+int getCABSteps() {
+  CAB_STEPS = analogRead(7);
+  if (CAB_STEPS > 530 && CAB_STEPS < 540) {
+    triggerSteps = 1;
+  } else if (CAB_STEPS > 550 && CAB_STEPS < 565) {
+    triggerSteps = 2;
+  } else if (CAB_STEPS > 570 && CAB_STEPS < 590) {
+    triggerSteps = 3;
+  } else if (CAB_STEPS > 595 && CAB_STEPS < 615) {
+    triggerSteps = 4;
+  } else if (CAB_STEPS > 620 && CAB_STEPS < 628) {
+    triggerSteps = 5;
+  } else if (CAB_STEPS > 630 && CAB_STEPS < 640) {
+    triggerSteps = 6;
+  }
+  return triggerSteps;
 }
 
 void getDateTime() {

@@ -206,7 +206,7 @@ void loop() {
     case 290: // CAB-L Combined Action Button Left
 
       triggerCAB = CAB_ACTION; // 0 for BB, 1 for TC, 2 for ABS
-      triggerStepsDecrease = CAB_STEPS; // 4 for x5
+      triggerStepsDecrease = triggerStepsDecrease+CAB_STEPS; // 4 for x5
 
       #if DEBUG_KEYS
         Serial.print("Button: CAB-L ("); Serial.print(buttonValue); Serial.println(") ");
@@ -254,7 +254,7 @@ void loop() {
     case 315: // CAB-R Combined Action Button Right
       
       triggerCAB = CAB_ACTION; // 0 for BB, 1 for TC, 2 for ABS
-      triggerStepsIncrease = CAB_STEPS; // 4 for x5
+      triggerStepsIncrease = triggerStepsIncrease+CAB_STEPS; // 4 for x5
 
       #if DEBUG_KEYS
         Serial.print("Button: CAB-R ("); Serial.print(buttonValue); Serial.println(") ");
