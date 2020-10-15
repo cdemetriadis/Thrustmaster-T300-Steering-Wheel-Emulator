@@ -89,21 +89,21 @@ volatile      byte pos;
 
 // Setup Button Matrix
 int           rowPin[] = {4, 5, 6, 7, 8, 9};            // Set pins for rows > OUTPUT
-int           colPin[] = {A0, A1, A2, A3, 11};          // Set pins for columns, could also use Analog pins > INPUT_PULLUP
+int           colPin[] = {A0, A1, A2, A3};              // Set pins for columns, could also use Analog pins > INPUT_PULLUP
 int           rowSize = sizeof(rowPin)/sizeof(rowPin[0]);
 int           colSize = sizeof(colPin)/sizeof(colPin[0]);
 
 
 // Button Matrix
-//      Cols  |  0              1               2               4                 5
-// Rows Pins  |  14/A0          15/A1           16/A2           17/A3             11 (Display)
-// ------------------------------------------------------------------------------------------------
-// 0    4     |  185 Triangle   205 Circle      226 Up          248 BB+ (Up)      131 Done
-// 1    5     |  204 Square     225 Cross       247 Down        270 BB- (Down)    147 Select
-// 2    6     |  224 L1         246 R1          269 left        293 TC- (Left)    164 Next
-// 3    7     |  245 L2         268 R2          292 Right       317 TC+ (Right)   182
-// 4    8     |  267 Share      291 Options     316 PS          342 ABS- (L3)     201
-// 5    9     |  290 CAB-       315 CAB+        341 Center (X)  368 ABS+ (R3)     221
+//      Cols  |  0              1               2               4
+// Rows Pins  |  14/A0          15/A1           16/A2           17/A3
+// -------------------------------------------------------------------------
+// 0    4     |  185 Triangle   205 Circle      226 Up          248 L1
+// 1    5     |  204 Square     225 Cross       247 Down        270 R1
+// 2    6     |  224 L2         246 R2          269 left        293 CAB-L
+// 3    7     |  245 Menu       268 Options     292 Right       317 CAB-R
+// 4    8     |  267 Next       291 PS          316 Confirm     342
+// 5    9     |  290 Select     315 Share       341             368
 
 void setup() {
 
@@ -250,6 +250,7 @@ void loop() {
   // Set the action based on the buttonValue
   switch (buttonValue) {
 
+
     case 185: // Triangle
       wheelState[0] = wheelState[0] & B11111101;
       if (DISPLAY_KEYS) {
@@ -272,18 +273,7 @@ void loop() {
       #endif
       break;
 
-    case 224: // L1
-      wheelState[0] = wheelState[0] & B11110111;
-      if (DISPLAY_KEYS) {
-        (DISPLAY_MODE) ? printDisplay("L1", 7) : printDisplay("Shift Down", 3);
-        menu = 0;
-      }
-      #if DEBUG_KEYS
-        Serial.print("Button: L1 ("); Serial.print(buttonValue); Serial.println(") ");
-      #endif
-      break;
-
-    case 245: // L2
+    case 224: // L2
       wheelState[1] = wheelState[1] & B11111011;
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("L2", 7) : printDisplay("Wipers", 5);
@@ -294,30 +284,55 @@ void loop() {
       #endif
       break;
 
-    case 267: // Share
-      wheelState[1] = wheelState[1] & B11011111;
-      if (DISPLAY_KEYS) {
-        printDisplay("Share", 5);
-        menu = 0;
+    case 245: // Menu (Display)
+      if (DISPLAY_STATUS) {
+        if (menu == 1) {
+          resetMenu();
+        } else if (menu == 2) {
+          menu = 1;
+          menuPage = 1;
+        } else if (menu == 3) {
+          menu = 1;
+          menuPage = 2;
+        } else {
+          menuPage = 1;
+          menu = 1;
+        }
+        showMenu();
+      } else {
+        lcd.display();
+        lcd.backlight();
+        DISPLAY_STATUS = 1;
+        EEPROM.write(3, DISPLAY_STATUS);
       }
+
       #if DEBUG_KEYS
-        Serial.print("Button: Share ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("Display: Done ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 290: // CAB-L Combined Action Button Left
-      
-      triggerCAB = CAB_ACTION; // 0 for BB, 1 for TC, 2 for ABS
-      triggerStepsDecrease = triggerStepsDecrease+CAB_STEPS+1; // 4 for x5
-
-      if (DISPLAY_KEYS) {
-        printDisplay("CAB-L: "+CABActionMap[CAB_ACTION]+"- "+CABStepsMap[CAB_STEPS], 1);
-        menu = 0;
-      }
+    case 267: // Next (Display)
+      lcd.display();
+      lcd.backlight();
+      DISPLAY_STATUS = 1;
+      EEPROM.write(3, DISPLAY_STATUS);
+      displayNext();
       #if DEBUG_KEYS
-        Serial.print("Button: CAB-L ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("Display: Next ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
+
+    case 290: // Select (Display)
+      lcd.display();
+      lcd.backlight();
+      DISPLAY_STATUS = 1;
+      EEPROM.write(3, DISPLAY_STATUS);
+      displaySelect();
+      #if DEBUG_KEYS
+        Serial.print("Display: Select("); Serial.print(buttonValue); Serial.println(") ");
+      #endif
+      break;
+
 
 
 
@@ -343,18 +358,7 @@ void loop() {
       #endif
       break;
 
-    case 246: // R1
-      wheelState[0] = wheelState[0] & B11111011;
-      if (DISPLAY_KEYS) {
-        (DISPLAY_MODE) ? printDisplay("R1", 7) : printDisplay("Shift Up", 4);
-        menu = 0;
-      }
-      #if DEBUG_KEYS
-        Serial.print("Button: R1 ("); Serial.print(buttonValue); Serial.println(") ");
-      #endif
-      break;
-
-    case 268: // R2
+    case 246: // R2
       wheelState[1] = wheelState[1] & B11110111;
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("R2", 7) : printDisplay("Dash", 6);
@@ -365,7 +369,7 @@ void loop() {
       #endif
       break;
 
-    case 291: // Options
+    case 268: // Options
       wheelState[1] = wheelState[1] & B11101111;
       if (DISPLAY_KEYS) {
         printDisplay("Options", 4);
@@ -376,19 +380,28 @@ void loop() {
       #endif
       break;
 
-    case 315: // CAB-R Combined Action Button Right
-      
-      triggerCAB = CAB_ACTION; // 0 for BB, 1 for TC, 2 for ABS
-      triggerStepsIncrease = triggerStepsIncrease+CAB_STEPS+1; // 4 for x5
-
+    case 291: // Playstation
+      wheelState[1] = wheelState[1] & B01111111;
       if (DISPLAY_KEYS) {
-        printDisplay("CAB-R: "+CABActionMap[CAB_ACTION]+"+ "+CABStepsMap[CAB_STEPS], 1);
+        printDisplay("Playstation", 2);
         menu = 0;
       }
       #if DEBUG_KEYS
-        Serial.print("Button: CAB-R ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("Button: PS ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
+
+    case 315: // Share
+      wheelState[1] = wheelState[1] & B11011111;
+      if (DISPLAY_KEYS) {
+        printDisplay("Share", 5);
+        menu = 0;
+      }
+      #if DEBUG_KEYS
+        Serial.print("Button: Share ("); Serial.print(buttonValue); Serial.println(") ");
+      #endif
+      break;
+
 
 
 
@@ -436,18 +449,7 @@ void loop() {
       #endif
       break;
 
-    case 316: // Playstation
-      wheelState[1] = wheelState[1] & B01111111;
-      if (DISPLAY_KEYS) {
-        printDisplay("Playstation", 2);
-        menu = 0;
-      }
-      #if DEBUG_KEYS
-        Serial.print("Button: PS ("); Serial.print(buttonValue); Serial.println(") ");
-      #endif
-      break;
-
-    case 341: // Cross
+    case 316: // D-Pad Confirm
       wheelState[1] = wheelState[1] & B10111111; // Cross
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("Cross", 5) : printDisplay("Confirm", 4);
@@ -460,7 +462,62 @@ void loop() {
 
 
 
-    case 248: // D-Pad Up
+
+    case 248: // L1
+      wheelState[0] = wheelState[0] & B11110111;
+      if (DISPLAY_KEYS) {
+        (DISPLAY_MODE) ? printDisplay("L1", 7) : printDisplay("Shift Down", 3);
+        menu = 0;
+      }
+      #if DEBUG_KEYS
+        Serial.print("Button: L1 ("); Serial.print(buttonValue); Serial.println(") ");
+      #endif
+      break;
+
+    case 270: // R1
+      wheelState[0] = wheelState[0] & B11111011;
+      if (DISPLAY_KEYS) {
+        (DISPLAY_MODE) ? printDisplay("R1", 7) : printDisplay("Shift Up", 4);
+        menu = 0;
+      }
+      #if DEBUG_KEYS
+        Serial.print("Button: R1 ("); Serial.print(buttonValue); Serial.println(") ");
+      #endif
+      break;
+
+    case 293: // 290 CAB-L Combined Action Button Left
+
+      triggerCAB = CAB_ACTION; // 0 for BB, 1 for TC, 2 for ABS
+      triggerStepsDecrease = triggerStepsDecrease+CAB_STEPS+1; // 4 for x5
+
+      if (DISPLAY_KEYS) {
+        printDisplay("CAB-L: "+CABActionMap[CAB_ACTION]+"- "+CABStepsMap[CAB_STEPS], 1);
+        menu = 0;
+      }
+      #if DEBUG_KEYS
+        Serial.print("Button: CAB-L ("); Serial.print(buttonValue); Serial.println(") ");
+      #endif
+      break;
+
+    case 317: // 315 CAB-R Combined Action Button Right
+
+      triggerCAB = CAB_ACTION; // 0 for BB, 1 for TC, 2 for ABS
+      triggerStepsIncrease = triggerStepsIncrease+CAB_STEPS+1; // 4 for x5
+
+      if (DISPLAY_KEYS) {
+        printDisplay("CAB-R: "+CABActionMap[CAB_ACTION]+"+ "+CABStepsMap[CAB_STEPS], 1);
+        menu = 0;
+      }
+      #if DEBUG_KEYS
+        Serial.print("Button: CAB-R ("); Serial.print(buttonValue); Serial.println(") ");
+      #endif
+      break;
+
+
+    //
+    // Encoder Functions
+
+    case 1000: // D-Pad Up
       wheelState[3] = wheelState[3] & B11110111; // CHRG+
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("D-Pad Up", 4) : printDisplay("BB+", 5);
@@ -471,7 +528,7 @@ void loop() {
       #endif
       break;
 
-    case 270: // D-Pad Down
+    case 1100: // D-Pad Down
       wheelState[3] = wheelState[3] & B10111111; // CHRG-
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("D-Pad Down", 3) : printDisplay("BB-", 5);
@@ -482,7 +539,7 @@ void loop() {
       #endif
       break;
 
-    case 293: // D-Pad Left
+    case 2000: // D-Pad Left
       wheelState[3] = wheelState[3] & B11011111; // DIF IN+
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("D-Pad Left", 3) : printDisplay("TC-", 4);
@@ -493,7 +550,7 @@ void loop() {
       #endif
       break;
 
-    case 317: // D-Pad Right
+    case 2100: // D-Pad Right
       wheelState[3] = wheelState[3] & B11101111; // DIF IN-
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("D-Pad Right", 3) : printDisplay("TC+", 4);
@@ -504,7 +561,7 @@ void loop() {
       #endif
       break;
 
-    case 342: // L3
+    case 3000: // L3
       wheelState[1] = wheelState[1] & B11111101; // Pump
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("L3", 7) : printDisplay("ABS-", 6);
@@ -515,7 +572,7 @@ void loop() {
       #endif
       break;
 
-    case 368: // R3
+    case 3100: // R3
       wheelState[1] = wheelState[1] & B11111110; // 1-
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("R3", 7) : printDisplay("ABS+", 6);
@@ -525,59 +582,12 @@ void loop() {
         Serial.print("Button: R3 ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
-
-
-    case 131: // Menu (Display)
-      if (DISPLAY_STATUS) {
-        if (menu == 1) {
-          resetMenu();
-        } else if (menu == 2) {
-          menu = 1;
-          menuPage = 1;
-        } else if (menu == 3) {
-          menu = 1;
-          menuPage = 2;
-        } else {
-          menuPage = 1;
-          menu = 1;
-        }
-        showMenu();
-      } else {
-        lcd.display();
-        lcd.backlight();
-        DISPLAY_STATUS = 1;
-        EEPROM.write(3, DISPLAY_STATUS);
-      }
-
-      #if DEBUG_KEYS
-        Serial.print("Display: Done ("); Serial.print(buttonValue); Serial.println(") ");
-      #endif
-      break;
-
-    case 147: // Select (Display)
-      lcd.display();
-      lcd.backlight();
-      DISPLAY_STATUS = 1;
-      EEPROM.write(3, DISPLAY_STATUS);
-      displaySelect();
-      #if DEBUG_KEYS
-        Serial.print("Display: Select("); Serial.print(buttonValue); Serial.println(") ");
-      #endif
-      break;
-
-    case 164: // Next (Display)
-      lcd.display();
-      lcd.backlight();
-      DISPLAY_STATUS = 1;
-      EEPROM.write(3, DISPLAY_STATUS);
-      displayNext();
-      #if DEBUG_KEYS
-        Serial.print("Display: Next ("); Serial.print(buttonValue); Serial.println(") ");
-      #endif
-      break;
+   
 
     default: // Reset if nothing is pressed
       break;
+
+
   }
 
 
@@ -661,22 +671,22 @@ void printDisplay(String line_1="", int pos_1=0, String line_2="", int pos_2=0) 
 }
 
 void encoderBB_decrement(i2cEncoderMiniLib* obj) {
-  buttonValue = 270;
+  buttonValue = 1100;
 }
 void encoderBB_increment(i2cEncoderMiniLib* obj) {
-  buttonValue = 248;
+  buttonValue = 1000;
 }
 void encoderTC_decrement(i2cEncoderMiniLib* obj) {
-  buttonValue = 293;
+  buttonValue = 2000;
 }
 void encoderTC_increment(i2cEncoderMiniLib* obj) {
-  buttonValue = 317;
+  buttonValue = 2100;
 }
 void encoderABS_decrement(i2cEncoderMiniLib* obj) {
-  buttonValue = 342;
+  buttonValue = 3000;
 }
 void encoderABS_increment(i2cEncoderMiniLib* obj) {
-  buttonValue = 368;
+  buttonValue = 3100;
 }
 
 void displayRuntime() {
