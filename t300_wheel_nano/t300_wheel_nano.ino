@@ -37,28 +37,30 @@ byte          wheelState[8];
 volatile      byte pos;
 
 // Setup Button Matrix
-int           rowPin[] = {4, 5, 6, 7, 8, 9};            // Set pins for rows > OUTPUT
-int           colPin[] = {A0, A1, A2, A3};              // Set pins for columns, could also use Analog pins > INPUT_PULLUP
+int           rowPin[] = {5, 6, 7, 8, 9};            // Set pins for rows > OUTPUT
+int           colPin[] = {A0, A1, A2, A3, 111};              // Set pins for columns, could also use Analog pins > INPUT_PULLUP
 int           rowSize = sizeof(rowPin)/sizeof(rowPin[0]);
 int           colSize = sizeof(colPin)/sizeof(colPin[0]);
 
 
 // Button Matrix
-//      Cols  |  0              1               2               4
-// Rows Pins  |  14/A0          15/A1           16/A2           17/A3
-// -------------------------------------------------------------------------
-// 0    4     |  185 Triangle   205 Circle      226 Up          248 L1
-// 1    5     |  204 Square     225 Cross       247 Down        270 R1
-// 2    6     |  224 L2         246 R2          269 left        293 CAB-L
-// 3    7     |  245            268 Options     292 Right       317 CAB-R
-// 4    8     |  267            291 PS          316 Confirm     342
-// 5    9     |  290            315 Share       341             368
+//      Cols  |  0              1               2               4               5
+// Rows Pins  |  14/A0          15/A1           16/A2           17/A3           11
+// ---------------------------------------------------------------------------------------------
+// 0    5     |  204 Triangle   225 Circle      247 Up          270 L1          147 
+// 1    6     |  224 Square     246 Cross       269 Down        293 R1          164 Share
+// 2    7     |  245 L2         268 R2          292 left        317 CAB-L
+// 3    8     |  267            291 Options     316 Right       342 CAB-R
+// 4    9     |  290            315 PS          341 Confirm     368
 
 void setup() {
 
   resetVars();
 
-  Serial.begin(9600);    // Arduino debug console
+  #if DEBUG_SETUP || DEBUG_KEYS || DEBUG_WHEELS
+    Serial.begin(115200);    // Arduino debug console
+  #endif
+  
   pinMode(MISO, OUTPUT); // Arduino is a slave device
   SPCR |= _BV(SPE);      // Enables the SPI when 1
   SPCR |= _BV(SPIE);     // Enables the SPI interrupt when 1
@@ -134,18 +136,18 @@ ISR (SPI_STC_vect) {
 }
 
 
-int CABActionGuide[3][2][3] = {
+int CABActionGuide[3][2][2] = {
   { // BB
-    {270, 3, B10111111},   // D-Pad Down - wheelState[3] = wheelState[3] & B10111111;
-    {248, 3, B11110111}    // D-Pad Up - wheelState[3] = wheelState[3] & B11110111;
+    {3, B10111111},   // D-Pad Down - wheelState[3] = wheelState[3] & B10111111;
+    {3, B11110111}    // D-Pad Up - wheelState[3] = wheelState[3] & B11110111;
   },
   { // TC
-    {293, 3, B11011111},   // D-Pad Left - wheelState[3] = wheelState[3] & B11011111;
-    {317, 3, B11101111}    // D-Pad Right - wheelState[3] = wheelState[3] & B11101111;
+    {3, B11011111},   // D-Pad Left - wheelState[3] = wheelState[3] & B11011111;
+    {3, B11101111}    // D-Pad Right - wheelState[3] = wheelState[3] & B11101111;
   },
   { // ABS
-    {342, 1, B11111101},  // L3 - wheelState[1] = wheelState[1] & B11111101;
-    {368, 1, B11111110}   // R3 - wheelState[1] = wheelState[1] & B11111110;
+    {1, B11111101},  // L3 - wheelState[1] = wheelState[1] & B11111101;
+    {1, B11111110}   // R3 - wheelState[1] = wheelState[1] & B11111110;
   }
 };
 
@@ -168,159 +170,143 @@ void loop() {
   switch (buttonValue) {
 
 
-    case 185: // Triangle
+    case 204: // Triangle
       wheelState[0] = wheelState[0] & B11111101;
-
       #if DEBUG_KEYS
-        Serial.print("Button: Triangle ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("Triangle ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 204: // Square
+    case 224: // Square
       wheelState[0] = wheelState[0] & B11111110;
-
       #if DEBUG_KEYS
-        Serial.print("Button: Square ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("Square ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 224: // L2
+    case 245: // L2
       wheelState[1] = wheelState[1] & B11111011;
-
       #if DEBUG_KEYS
-        Serial.print("Button: L2 ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("L2 ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    
 
-    case 205: // Circle
+
+    case 225: // Circle
       wheelState[0] = wheelState[0] & B01111111;
-
       #if DEBUG_KEYS
-        Serial.print("Button: Circle ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("Circle ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 225: // Cross
+    case 246: // Cross
       wheelState[1] = wheelState[1] & B10111111;
-
       #if DEBUG_KEYS
-        Serial.print("Button: Cross ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("Cross ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 246: // R2
+    case 268: // R2
       wheelState[1] = wheelState[1] & B11110111;
-
       #if DEBUG_KEYS
-        Serial.print("Button: R2 ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("R2 ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 268: // Options
+    case 291: // Options
       wheelState[1] = wheelState[1] & B11101111;
-
       #if DEBUG_KEYS
-        Serial.print("Button: Options ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("Options ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 291: // Playstation
+    case 315: // Playstation
       wheelState[1] = wheelState[1] & B01111111;
-
       #if DEBUG_KEYS
-        Serial.print("Button: PS ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("Playstation ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 315: // Share
+    case 164: // Share
       wheelState[1] = wheelState[1] & B11011111;
-
       #if DEBUG_KEYS
-        Serial.print("Button: Share ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("Share ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
 
 
 
-    case 226: // D-Pad Up
+    case 247: // D-Pad Up
       wheelState[2] = wheelState[2] & B11110111; // DP-Up
-
       #if DEBUG_KEYS
-        Serial.print("Button: D-Pad Up ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("D-Pad Up ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 247: // D-Pad Down
+    case 269: // D-Pad Down
       wheelState[2] = wheelState[2] & B10111111; // DP-Down
-
       #if DEBUG_KEYS
-        Serial.print("Button: D-Pad Down ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("D-Pad Down ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 269: // D-Pad Left
+    case 292: // D-Pad Left
       wheelState[2] = wheelState[2] & B11101111; // DP-Left
-
       #if DEBUG_KEYS
-        Serial.print("Button: D-Pad Left ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("D-Pad Left ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 292: // D-Pad Right
+    case 316: // D-Pad Right
       wheelState[2] = wheelState[2] & B11011111; // DP-Right
-
       #if DEBUG_KEYS
-        Serial.print("Button: D-Pad Right ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("D-Pad Right ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 316: // D-Pad Confirm
+    case 341: // D-Pad Confirm
       wheelState[1] = wheelState[1] & B10111111; // Cross
-
       #if DEBUG_KEYS
-        Serial.print("Button: Center ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("Cross ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
 
 
 
-    case 248: // L1
+    case 270: // L1
       wheelState[0] = wheelState[0] & B11110111;
-
       #if DEBUG_KEYS
-        Serial.print("Button: L1 ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("L1 ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 270: // R1
+    case 293: // R1
       wheelState[0] = wheelState[0] & B11111011;
-
       #if DEBUG_KEYS
-        Serial.print("Button: R1 ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("R1 ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 293: // 290 CAB-L Combined Action Button Left
+    case 317: // 290 CAB-L Combined Action Button Left
 
       triggerCAB = CAB_ACTION; // 0 for BB, 1 for TC, 2 for ABS
       triggerStepsDecrease = triggerStepsDecrease+CAB_STEPS; // 4 for x5
 
       #if DEBUG_KEYS
-        Serial.print("Button: CAB-L ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("CAB-L ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 317: // 315 CAB-R Combined Action Button Right
+    case 342: // 315 CAB-R Combined Action Button Right
 
       triggerCAB = CAB_ACTION; // 0 for BB, 1 for TC, 2 for ABS
       triggerStepsIncrease = triggerStepsIncrease+CAB_STEPS; // 4 for x5
 
       #if DEBUG_KEYS
-        Serial.print("Button: CAB-R ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("CAB-R ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
@@ -331,49 +317,43 @@ void loop() {
 
     case 1000: // D-Pad Up
       wheelState[3] = wheelState[3] & B11110111; // CHRG+
-
       #if DEBUG_KEYS
-        Serial.print("Button: D-Pad Up ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("D-Pad Up ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
     case 1100: // D-Pad Down
       wheelState[3] = wheelState[3] & B10111111; // CHRG-
-
       #if DEBUG_KEYS
-        Serial.print("Button: D-Pad Down ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("D-Pad Down ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
     case 2000: // D-Pad Left
       wheelState[3] = wheelState[3] & B11011111; // DIF IN+
-
       #if DEBUG_KEYS
-        Serial.print("Button: D-Pad Left ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("D-Pad Left ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
     case 2100: // D-Pad Right
       wheelState[3] = wheelState[3] & B11101111; // DIF IN-
-
       #if DEBUG_KEYS
-        Serial.print("Button: D-Pad Right ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("D-Pad Right ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
     case 3000: // L3
       wheelState[1] = wheelState[1] & B11111101; // Pump
-
       #if DEBUG_KEYS
-        Serial.print("Button: L3 ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("L3 ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
     case 3100: // R3
       wheelState[1] = wheelState[1] & B11111110; // 1-
-
       #if DEBUG_KEYS
-        Serial.print("Button: R3 ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("R3 ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
    
@@ -387,11 +367,11 @@ void loop() {
   
   // CAB Trigger 
   if (triggerStepsIncrease > 0) {
-    wheelState[CABActionGuide[CAB_ACTION][1][1]] = wheelState[CABActionGuide[CAB_ACTION][1][1]] & CABActionGuide[CAB_ACTION][1][2];
+    wheelState[CABActionGuide[CAB_ACTION][1][0]] = wheelState[CABActionGuide[CAB_ACTION][1][0]] & CABActionGuide[CAB_ACTION][1][1];
     triggerStepsIncrease--;
   }
   if (triggerStepsDecrease > 0) {
-    wheelState[CABActionGuide[CAB_ACTION][0][1]] = wheelState[CABActionGuide[CAB_ACTION][0][1]] & CABActionGuide[CAB_ACTION][0][2];
+    wheelState[CABActionGuide[CAB_ACTION][0][0]] = wheelState[CABActionGuide[CAB_ACTION][0][0]] & CABActionGuide[CAB_ACTION][0][1];
     triggerStepsDecrease--;
   }
 

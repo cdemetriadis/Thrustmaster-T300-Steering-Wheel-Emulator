@@ -16,7 +16,7 @@
 #define       DEBUG_KEYS false                        // Debug the button presses
 #define       DEBUG_WHEEL false                       // Debug wheel output
 #define       MESSAGE_DURATION 750                    // Duration of the messages on the screen
-#define       DEBOUNCE 150                             // Set this to the lowest value that gives the best result
+#define       DEBOUNCE 150                            // Set this to the lowest value that gives the best result
 
 #define       LOADING "Loading..."
 #define       SELECT_OPTION " Select Option:"
@@ -26,15 +26,20 @@
 #define       DISPLAY_KEYPRESS_OFF " Disp.Keypress"
 #define       DISPLAY_STATUS_ON "~Display Off"
 #define       DISPLAY_STATUS_OFF " Display Off"
+#define       BUZZER_STATUS_ON "~Buzzer"
+#define       BUZZER_STATUS_OFF " Buzzer"
 #define       DISPLAY_RUNTIME_ON "~Display Runtime"
 #define       KEYPRESS_ON "Keypress: On"
 #define       KEYPRESS_OFF "Keypress: Off"
 #define       MODE_PS "Mode: PS"
 #define       MODE_WHEEL "Mode: Wheel"
+#define       BUZZER_ON "Buzzer: On"
+#define       BUZZER_OFF "Buzzer: Off"
 
 // Setup EEPROM
 bool          DISPLAY_MODE = EEPROM.read(0);          // Retrieve the display output mode. 'true:1' for Playstation, 'false:0' for Wheel
 bool          DISPLAY_KEYS = EEPROM.read(1);          // Retrieve the display keypress option. 'true:1' on, 'false:0' off
+bool          BUZZER_STATUS = EEPROM.read(2);          // Retrieve the buzzer status. 'true:1' on, 'false:0' off
 bool          DISPLAY_STATUS = EEPROM.read(3);        // Retrieve the display status. 'true:1' on, 'false:0' off
 
 
@@ -51,7 +56,7 @@ int           curValue = -100;
 String        prevLine_1;
 String        prevLine_2;
 void          printDisplay(String line_1="", int pos_1=0, String line_2="", int pos_2=0);
-unsigned long displayTime = millis();                 // Used for delaying the screen message
+unsigned long displayTime;                            // Used for delaying the screen message
 
 
 // Setup Real Time Clock
@@ -61,11 +66,10 @@ String        getDate;
 
 
 // Setup Buzzer 
-int           buzzerPin = 11;
-bool          buzzerPlayed = false;
+#define       BUZZER_PIN 4
+#define       BUZZER_TONE 2500
+#define       BUZZER_DURATION 50
 unsigned long buzzerTime;
-int           buzzerTone = 4500;
-int           buzzerDuration = 50;
 
 // Menu Navigation Setup
 int           menu = 0;
@@ -90,22 +94,21 @@ volatile      byte pos;
 
 
 // Setup Button Matrix
-int           rowPin[] = {4, 5, 6, 7, 8, 9};            // Set pins for rows > OUTPUT
-int           colPin[] = {A0, A1, A2, A3};              // Set pins for columns, could also use Analog pins > INPUT_PULLUP
+int           rowPin[] = {5, 6, 7, 8, 9};           // Set pins for rows > OUTPUT
+int           colPin[] = {A0, A1, A2, A3, 11};              // Set pins for columns, could also use Analog pins > INPUT_PULLUP
 int           rowSize = sizeof(rowPin)/sizeof(rowPin[0]);
 int           colSize = sizeof(colPin)/sizeof(colPin[0]);
 
 
 // Button Matrix
-//      Cols  |  0              1               2               4
-// Rows Pins  |  14/A0          15/A1           16/A2           17/A3
-// -------------------------------------------------------------------------
-// 0    4     |  185 Triangle   205 Circle      226 Up          248 L1
-// 1    5     |  204 Square     225 Cross       247 Down        270 R1
-// 2    6     |  224 L2         246 R2          269 left        293 CAB-L
-// 3    7     |  245 Menu       268 Options     292 Right       317 CAB-R
-// 4    8     |  267 Next       291 PS          316 Confirm     342
-// 5    9     |  290 Select     315 Share       341             368
+//      Cols  |  0              1               2               4               5
+// Rows Pins  |  14/A0          15/A1           16/A2           17/A3           11
+// ---------------------------------------------------------------------------------------------
+// 0    5     |  204 Triangle   225 Circle      247 Up          270 L1          147 Select
+// 1    6     |  224 Square     246 Cross       269 Down        293 R1          164 Share
+// 2    7     |  245 L2         268 R2          292 left        317 CAB-L
+// 3    8     |  267 Menu       291 Options     316 Right       342 CAB-R
+// 4    9     |  290 Next       315 PS          341 Confirm     368
 
 
 void setup() {
@@ -113,23 +116,22 @@ void setup() {
   resetVars();
 
   #if DEBUG_SETUP || DEBUG_KEYS || DEBUG_WHEELS
-    Serial.begin(9600);    // Arduino debug console
+    Serial.begin(115200);    // Arduino debug console
   #endif
 
   pinMode(MISO, OUTPUT); // Arduino is a slave device
   SPCR |= _BV(SPE);      // Enables the SPI when 1
   SPCR |= _BV(SPIE);     // Enables the SPI interrupt when 1
-  
-  pinMode(buzzerPin, OUTPUT); // Set buzzer pin
 
+  pinMode(BUZZER_PIN, OUTPUT); // Set buzzer pin as OUTPUT
+  
   // Interrupt for SS rising edge
   attachInterrupt (digitalPinToInterrupt(2), ss_rising, RISING); // Interrupt for Button Matrix
   
-  
   // Setup Encoders
   pinMode(IntPin, INPUT);
-  encoderBB.reset();
-  encoderBB.begin(i2cEncoderMiniLib::RMOD_X1 );
+//  encoderBB.reset();
+//  encoderBB.begin(i2cEncoderMiniLib::RMOD_X1 );
   encoderBB.onIncrement = encoderBB_increment;
   encoderBB.onDecrement = encoderBB_decrement;
 //  encoderTC.reset();
@@ -193,6 +195,8 @@ void setup() {
     #endif
   }
 
+  buzzerStartup();
+
 }
 
 
@@ -226,27 +230,27 @@ String CABStepsMap[] = {
   "x8"
 };
 
-int CABActionGuide[3][2][3] = {
+int CABActionGuide[3][2][2] = {
   { // BB
-    {270, 3, B10111111},   // D-Pad Down - wheelState[3] = wheelState[3] & B10111111;
-    {248, 3, B11110111}    // D-Pad Up - wheelState[3] = wheelState[3] & B11110111;
+    {3, B10111111},   // D-Pad Down - wheelState[3] = wheelState[3] & B10111111;
+    {3, B11110111}    // D-Pad Up - wheelState[3] = wheelState[3] & B11110111;
   },
   { // TC
-    {293, 3, B11011111},   // D-Pad Left - wheelState[3] = wheelState[3] & B11011111;
-    {317, 3, B11101111}    // D-Pad Right - wheelState[3] = wheelState[3] & B11101111;
+    {3, B11011111},   // D-Pad Left - wheelState[3] = wheelState[3] & B11011111;
+    {3, B11101111}    // D-Pad Right - wheelState[3] = wheelState[3] & B11101111;
   },
   { // ABS
-    {342, 1, B11111101},  // L3 - wheelState[1] = wheelState[1] & B11111101;
-    {368, 1, B11111110}   // R3 - wheelState[1] = wheelState[1] & B11111110;
+    {1, B11111101},  // L3 - wheelState[1] = wheelState[1] & B11111101;
+    {1, B11111110}   // R3 - wheelState[1] = wheelState[1] & B11111110;
   }
 };
 
 void loop() {
-
-
+  
   if (digitalRead(IntPin) == LOW) {
-    /* Check the status of the encoder and call the callback */
     encoderBB.updateStatus();
+//    encoderTC.updateStatus();
+//    encoderABS.updateStatus();
   }
 
   //
@@ -254,45 +258,48 @@ void loop() {
   // This functions returns a buttonValue for each button
   scanButtonMatrix();
 
-
   //
   // Set the action based on the buttonValue
   switch (buttonValue) {
 
-    case 185: // Triangle
+    case 204: // Triangle
       wheelState[0] = wheelState[0] & B11111101;
+      buzzer();
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("Triangle", 4) : printDisplay("Pit Limiter", 2);
         menu = 0;
       }
       #if DEBUG_KEYS
-        Serial.print("Button: Triangle ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("Triangle ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 204: // Square
+    case 224: // Square
       wheelState[0] = wheelState[0] & B11111110;
+      buzzer();
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("Square", 5) : printDisplay("Lights", 5);
         menu = 0;
       }
       #if DEBUG_KEYS
-        Serial.print("Button: Square ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("Square ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 224: // L2
+    case 245: // L2
       wheelState[1] = wheelState[1] & B11111011;
+      buzzer();
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("L2", 7) : printDisplay("Wipers", 5);
         menu = 0;
       }
       #if DEBUG_KEYS
-        Serial.print("Button: L2 ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("L2 ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 245: // Menu (Display)
+    case 267: // Menu (Display)
+      buzzer();
       if (DISPLAY_STATUS) {
         if (menu == 1) {
           resetMenu();
@@ -315,185 +322,201 @@ void loop() {
       }
 
       #if DEBUG_KEYS
-        Serial.print("Display: Done ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("Done ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 267: // Next (Display)
+    case 290: // Next (Display)
+      buzzer();
       lcd.display();
       lcd.backlight();
       DISPLAY_STATUS = 1;
       EEPROM.write(3, DISPLAY_STATUS);
       displayNext();
       #if DEBUG_KEYS
-        Serial.print("Display: Next ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("Next ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 290: // Select (Display)
+    case 147: // Select (Display)
+      buzzer();
       lcd.display();
       lcd.backlight();
       DISPLAY_STATUS = 1;
       EEPROM.write(3, DISPLAY_STATUS);
       displaySelect();
       #if DEBUG_KEYS
-        Serial.print("Display: Select("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("Select("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
 
 
 
-    case 205: // Circle
+    case 225: // Circle
       wheelState[0] = wheelState[0] & B01111111;
+      buzzer();
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("Circle", 5) : printDisplay("Flash", 5);
         menu = 0;
       }
       #if DEBUG_KEYS
-        Serial.print("Button: Circle ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("Circle ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 225: // Cross
+    case 246: // Cross
       wheelState[1] = wheelState[1] & B10111111;
+      buzzer();
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("Cross", 5) : printDisplay("HUD", 6);
         menu = 0;
       }
       #if DEBUG_KEYS
-        Serial.print("Button: Cross ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("Cross ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 246: // R2
+    case 268: // R2
       wheelState[1] = wheelState[1] & B11110111;
+      buzzer();
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("R2", 7) : printDisplay("Dash", 6);
         menu = 0;
       }
       #if DEBUG_KEYS
-        Serial.print("Button: R2 ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("R2 ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 268: // Options
+    case 291: // Options
       wheelState[1] = wheelState[1] & B11101111;
+      buzzer();
       if (DISPLAY_KEYS) {
         printDisplay("Options", 4);
         menu = 0;
       }
       #if DEBUG_KEYS
-        Serial.print("Button: Options ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("Options ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 291: // Playstation
+    case 315: // Playstation
       wheelState[1] = wheelState[1] & B01111111;
+      buzzer();
       if (DISPLAY_KEYS) {
         printDisplay("Playstation", 2);
         menu = 0;
       }
       #if DEBUG_KEYS
-        Serial.print("Button: PS ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("Playstation ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 315: // Share
+    case 164: // Share
       wheelState[1] = wheelState[1] & B11011111;
+      buzzer();
       if (DISPLAY_KEYS) {
         printDisplay("Share", 5);
         menu = 0;
       }
       #if DEBUG_KEYS
-        Serial.print("Button: Share ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("Share ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
 
 
 
-    case 226: // D-Pad Up
+    case 247: // D-Pad Up
       wheelState[2] = wheelState[2] & B11110111; // DP-Up
+      buzzer();
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("D-Pad Up", 4) : printDisplay("Up", 7);
         menu = 0;
       }
       #if DEBUG_KEYS
-        Serial.print("Button: D-Pad Up ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("D-Pad Up ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 247: // D-Pad Down
+    case 269: // D-Pad Down
       wheelState[2] = wheelState[2] & B10111111; // DP-Down
+      buzzer();
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("D-Pad Down", 3) : printDisplay("Down", 6);
         menu = 0;
       }
       #if DEBUG_KEYS
-        Serial.print("Button: D-Pad Down ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("D-Pad Down ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 269: // D-Pad Left
+    case 292: // D-Pad Left
       wheelState[2] = wheelState[2] & B11101111; // DP-Left
+      buzzer();
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("D-Pad Left", 3) : printDisplay("Left", 6);
         menu = 0;
       }
       #if DEBUG_KEYS
-        Serial.print("Button: D-Pad Left ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("D-Pad Left ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 292: // D-Pad Right
+    case 316: // D-Pad Right
       wheelState[2] = wheelState[2] & B11011111; // DP-Right
+      buzzer();
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("D-Pad Right", 2) : printDisplay("Right", 5);
         menu = 0;
       }
       #if DEBUG_KEYS
-        Serial.print("Button: D-Pad Right ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("D-Pad Right ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 316: // D-Pad Confirm
+    case 341: // D-Pad Confirm
       wheelState[1] = wheelState[1] & B10111111; // Cross
+      buzzer();
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("Cross", 5) : printDisplay("Confirm", 4);
         menu = 0;
       }
       #if DEBUG_KEYS
-        Serial.print("Button: Center ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("Cross ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
 
 
 
-    case 248: // L1
+    case 270: // L1
       wheelState[0] = wheelState[0] & B11110111;
+      buzzer();
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("L1", 7) : printDisplay("Shift Down", 3);
         menu = 0;
       }
       #if DEBUG_KEYS
-        Serial.print("Button: L1 ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("L1 ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 270: // R1
+    case 293: // R1
       wheelState[0] = wheelState[0] & B11111011;
+      buzzer();
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("R1", 7) : printDisplay("Shift Up", 4);
         menu = 0;
       }
       #if DEBUG_KEYS
-        Serial.print("Button: R1 ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("R1 ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 293: // 290 CAB-L Combined Action Button Left
+    case 317: // 290 CAB-L Combined Action Button Left
+      buzzer();
 
       triggerCAB = getCABAction();
       triggerStepsDecrease = triggerStepsDecrease + getCABSteps();
@@ -503,11 +526,12 @@ void loop() {
         menu = 0;
       }
       #if DEBUG_KEYS
-        Serial.print("Button: CAB-L ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("CAB-L ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
-    case 317: // 315 CAB-R Combined Action Button Right
+    case 342: // 315 CAB-R Combined Action Button Right
+      buzzer();
 
       triggerCAB = getCABAction();
       triggerStepsIncrease = triggerStepsIncrease + getCABSteps();
@@ -517,7 +541,7 @@ void loop() {
         menu = 0;
       }
       #if DEBUG_KEYS
-        Serial.print("Button: CAB-R ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("CAB-R ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
@@ -528,97 +552,89 @@ void loop() {
 
     case 1000: // D-Pad Up
       wheelState[3] = wheelState[3] & B11110111; // CHRG+
+      buzzer();
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("D-Pad Up", 4) : printDisplay("BB+", 5);
         menu = 0;
       }
       #if DEBUG_KEYS
-        Serial.print("Button: D-Pad Up ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("D-Pad Up ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
     case 1100: // D-Pad Down
       wheelState[3] = wheelState[3] & B10111111; // CHRG-
+      buzzer();
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("D-Pad Down", 3) : printDisplay("BB-", 5);
         menu = 0;
       }
       #if DEBUG_KEYS
-        Serial.print("Button: D-Pad Down ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("D-Pad Down ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
     case 2000: // D-Pad Left
       wheelState[3] = wheelState[3] & B11011111; // DIF IN+
+      buzzer();
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("D-Pad Left", 3) : printDisplay("TC-", 4);
         menu = 0;
       }
       #if DEBUG_KEYS
-        Serial.print("Button: D-Pad Left ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("D-Pad Left ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
     case 2100: // D-Pad Right
       wheelState[3] = wheelState[3] & B11101111; // DIF IN-
+      buzzer();
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("D-Pad Right", 3) : printDisplay("TC+", 4);
         menu = 0;
       }
       #if DEBUG_KEYS
-        Serial.print("Button: D-Pad Right ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("D-Pad Right ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
     case 3000: // L3
       wheelState[1] = wheelState[1] & B11111101; // Pump
+      buzzer();
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("L3", 7) : printDisplay("ABS-", 6);
         menu = 0;
       }
       #if DEBUG_KEYS
-        Serial.print("Button: L3 ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("L3 ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
 
     case 3100: // R3
       wheelState[1] = wheelState[1] & B11111110; // 1-
+      buzzer();
       if (DISPLAY_KEYS) {
         (DISPLAY_MODE) ? printDisplay("R3", 7) : printDisplay("ABS+", 6);
         menu = 0;
       }
       #if DEBUG_KEYS
-        Serial.print("Button: R3 ("); Serial.print(buttonValue); Serial.println(") ");
+        Serial.print("R3 ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
       break;
-   
 
     default: // Reset if nothing is pressed
       break;
   }
 
-
-  // 
-  // Buzzer on keypress
-  if (buttonValue > 0) {
-    if (buzzerPlayed == false) {
-      tone(buzzerPin, buzzerTone, buzzerDuration);
-      buzzerPlayed = true;
-      buzzerTime = millis();
-    }
-  }
-  
-  if ((millis()-buzzerTime) > 300) {
-    buzzerPlayed = false;
-  }
+//  buzzerPlayed = false;
 
   // CAB Trigger 
   if (triggerStepsIncrease > 0) {
-    wheelState[CABActionGuide[triggerCAB][1][1]] = wheelState[CABActionGuide[triggerCAB][1][1]] & CABActionGuide[triggerCAB][1][2];
+    wheelState[CABActionGuide[triggerCAB][1][0]] = wheelState[CABActionGuide[triggerCAB][1][0]] & CABActionGuide[triggerCAB][1][1];
     triggerStepsIncrease--;
   }
   if (triggerStepsDecrease > 0) {
-    wheelState[CABActionGuide[triggerCAB][0][1]] = wheelState[CABActionGuide[triggerCAB][0][1]] & CABActionGuide[triggerCAB][0][2];
+    wheelState[CABActionGuide[triggerCAB][0][0]] = wheelState[CABActionGuide[triggerCAB][0][0]] & CABActionGuide[triggerCAB][0][1];
     triggerStepsDecrease--;
   }
 
@@ -766,7 +782,7 @@ void displayRuntime() {
 void showMenu() {
 
   if (menu == 1) { // Main Menu
-    maxPages = 4;
+    maxPages = 5;
     switch (menuPage) {
       case 1:
         printDisplay(SELECT_OPTION, 0, DISPLAY_MODE_ON, 0);
@@ -778,7 +794,10 @@ void showMenu() {
         printDisplay(DISPLAY_KEYPRESS_OFF, 0, DISPLAY_STATUS_ON, 0);
         break;
       case 4:
-        printDisplay(DISPLAY_STATUS_OFF, 0, DISPLAY_RUNTIME_ON, 0);
+        printDisplay(DISPLAY_STATUS_OFF, 0, BUZZER_STATUS_ON, 0);
+        break;
+      case 5:
+        printDisplay(BUZZER_STATUS_OFF, 0, DISPLAY_RUNTIME_ON, 0);
         break;
     }
   } else {
@@ -810,7 +829,13 @@ void displaySelect() {
     resetMenu();
   }
 
-  if (menu == 1 && menuPage == 4) { // Display Runtime
+  if (menu == 1 && menuPage == 4) { // Buzzer Status
+    toggleBuzzerStatus();
+    delay(MESSAGE_DURATION);
+    showMenu();
+  }
+
+  if (menu == 1 && menuPage == 5) { // Display Runtime
     displayRuntime();
     delay(MESSAGE_DURATION);
     showMenu();
@@ -837,6 +862,21 @@ void toggleDisplayKeypress() {
     printDisplay(KEYPRESS_ON, 2);
   }
   EEPROM.write(1, DISPLAY_KEYS);
+  delay(MESSAGE_DURATION);
+  showMenu();
+}
+
+void toggleBuzzerStatus() {
+  if (BUZZER_STATUS == 1) {
+    BUZZER_STATUS = 0;
+    printDisplay(BUZZER_OFF, 2);
+  } else {
+    BUZZER_STATUS = 1;
+    printDisplay(BUZZER_ON, 3);
+//    buzzerPlayed = true;
+    tone(BUZZER_PIN, BUZZER_TONE, BUZZER_DURATION);
+  }
+  EEPROM.write(2, BUZZER_STATUS);
   delay(MESSAGE_DURATION);
   showMenu();
 }
@@ -889,6 +929,20 @@ int getCABSteps() {
   return triggerSteps;
 }
 
+void buzzer() {
+  if (BUZZER_STATUS) {
+    tone(BUZZER_PIN, BUZZER_TONE, BUZZER_DURATION);
+    buzzerTime = millis();
+  }
+}
+
+void buzzerStartup() {
+  tone(BUZZER_PIN, 1500, 80);
+  delay(150);
+  tone(BUZZER_PIN, 2500, 80);
+  delay(150);
+  tone(BUZZER_PIN, 3500, 80);
+}
 
 void getDateTime() {
   
