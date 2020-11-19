@@ -16,10 +16,11 @@
 #define       DEBUG_KEYS false                        // Debug the button presses
 #define       DEBUG_RESPONSE false                    // Debug the response time
 #define       DEBUG_WHEEL false                       // Debug wheel output
+#define       Rotary_Switch_T300 true                 // Select the values for the Rotary Switches. 'true:T300', 'false:USB'
 #define       MESSAGE_DURATION 750                    // Duration of the messages on the screen
-#define       DEBOUNCE 80                             // Set this to the lowest value that gives the best result
+#define       DEBOUNCE 120                            // Set this to the lowest value that gives the best result
 
-#define       MENU "~Menu"
+#define       MENU "~Ready"
 #define       LOADING "Loading..."
 #define       SELECT_OPTION " Select Option:"
 #define       DISPLAY_MODE_ON "~Display Mode"
@@ -73,6 +74,10 @@ tmElements_t  tm;
 String        getTime;
 String        getDate;
 bool          chirp_played = true;
+String        tm_hour; 
+String        tm_minute;
+String        tm_month = "--";
+String        tm_date = "--";
 
 
 // Setup Buzzer 
@@ -92,6 +97,7 @@ int           triggerStepsIncrease = 0;
 int           triggerStepsDecrease = 0;
 int           CAB_ACTION;
 int           CAB_STEPS;
+unsigned long cabTrigger = millis();
 
 
 // Button Matrix
@@ -138,15 +144,17 @@ void setup() {
   
   // Setup Encoders
   pinMode(IntPin, INPUT);
+  encoderBB.begin(i2cEncoderMiniLib::IPUP_ENABLE);
   encoderBB.onIncrement = encoderBB_increment;
   encoderBB.onDecrement = encoderBB_decrement;
-  encoderBB.begin(i2cEncoderMiniLib::IPUP_ENABLE);
+  encoderABS.begin(i2cEncoderMiniLib::IPUP_ENABLE);
   encoderABS.onIncrement = encoderABS_increment;
   encoderABS.onDecrement = encoderABS_decrement;
-  encoderABS.begin(i2cEncoderMiniLib::IPUP_ENABLE);
+  encoderABS.onButtonLongPush = toggleBacklight;
+  encoderABS.writeDoublePushPeriod(50);
+  encoderTC.begin(i2cEncoderMiniLib::IPUP_ENABLE);
   encoderTC.onIncrement = encoderTC_increment;
   encoderTC.onDecrement = encoderTC_decrement;
-  encoderTC.begin(i2cEncoderMiniLib::IPUP_ENABLE);
 
   encoderBB.autoconfigInterrupt();
   encoderABS.autoconfigInterrupt();
@@ -311,7 +319,7 @@ void loop() {
         DISPLAY_STATUS = 1;
         EEPROM.write(3, DISPLAY_STATUS);
       }
-
+      
       #if DEBUG_KEYS
         Serial.print("Done ("); Serial.print(buttonValue); Serial.println(") ");
       #endif
@@ -497,7 +505,7 @@ void loop() {
       buzzer();
 
       triggerCAB = getCABAction();
-      triggerStepsDecrease = triggerStepsDecrease + getCABSteps();
+      triggerStepsDecrease = getCABSteps(); // triggerStepsDecrease + getCABSteps();
 
       if (DISPLAY_KEYS) {
         printDisplay(CABActionMap[triggerCAB]+" -"+triggerStepsDecrease, 5);
@@ -512,7 +520,7 @@ void loop() {
       buzzer();
       
       triggerCAB = getCABAction();
-      triggerStepsIncrease = triggerStepsIncrease + getCABSteps();
+      triggerStepsIncrease = getCABSteps(); // triggerStepsIncrease + getCABSteps();
 
       if (DISPLAY_KEYS) {
         printDisplay(CABActionMap[triggerCAB]+" +"+triggerStepsIncrease, 5);
@@ -665,13 +673,15 @@ void loop() {
   }
 
   // CAB Trigger 
-  if (triggerStepsIncrease > 0) {
+  if (triggerStepsIncrease > 0 && ((millis()-cabTrigger) > (DEBOUNCE*2))) {
     wheelState[CABActionGuide[triggerCAB][1][0]] = wheelState[CABActionGuide[triggerCAB][1][0]] & CABActionGuide[triggerCAB][1][1];
     triggerStepsIncrease--;
+    cabTrigger = millis();
   }
-  if (triggerStepsDecrease > 0) {
+  if (triggerStepsDecrease > 0 && ((millis()-cabTrigger) > (DEBOUNCE*2))) {
     wheelState[CABActionGuide[triggerCAB][0][0]] = wheelState[CABActionGuide[triggerCAB][0][0]] & CABActionGuide[triggerCAB][0][1];
     triggerStepsDecrease--;
+    cabTrigger = millis();
   }
 
   #if DEBUG_WHEEL
@@ -970,39 +980,77 @@ void resetMenu() {
   menu = 0;
 }
 
-int getCABAction() {
-  CAB_ACTION = analogRead(6);
-  if (CAB_ACTION >= 770 && CAB_ACTION <= 820) {
-    triggerCAB = 0;
-  } else if (CAB_ACTION >= 640 && CAB_ACTION <= 690) {
-    triggerCAB = 1;
-  } else if (CAB_ACTION >= 510 && CAB_ACTION <= 550) {
-    triggerCAB = 2;
+#if Rotary_Switch_T300
+  // T300 Values (~3.5V)
+  int getCABAction() {
+    CAB_ACTION = analogRead(6);
+    if (CAB_ACTION >= 770 && CAB_ACTION <= 820) {
+      triggerCAB = 0;
+    } else if (CAB_ACTION >= 640 && CAB_ACTION <= 690) {
+      triggerCAB = 1;
+    } else if (CAB_ACTION >= 510 && CAB_ACTION <= 550) {
+      triggerCAB = 2;
+    }
+    return triggerCAB;
   }
-  return triggerCAB;
-}
-
-int getCABSteps() {
-  CAB_STEPS = analogRead(7);
-  if (CAB_STEPS >= 510 && CAB_STEPS <= 550) {
-    triggerSteps = 1;
-  } else if (CAB_STEPS >= 390 && CAB_STEPS <= 420) {
-    triggerSteps = 2;
-  } else if (CAB_STEPS >= 240 && CAB_STEPS <= 280) {
-    triggerSteps = 3;
-  } else if (CAB_STEPS >= 110 && CAB_STEPS <= 150) {
-    triggerSteps = 4;
-  } else if (CAB_STEPS >= 0 && CAB_STEPS <= 60) {
-    triggerSteps = 5;
-  } else if (CAB_STEPS >= 910 && CAB_STEPS <= 950) {
-    triggerSteps = 6;
-  } else if (CAB_STEPS >= 770 && CAB_STEPS <= 820) {
-    triggerSteps = 7;
-  } else if (CAB_STEPS >= 640 && CAB_STEPS <= 690) {
-    triggerSteps = 8;
+  
+  int getCABSteps() {
+    CAB_STEPS = analogRead(7);
+    if (CAB_STEPS >= 510 && CAB_STEPS <= 550) {
+      triggerSteps = 1;
+    } else if (CAB_STEPS >= 390 && CAB_STEPS <= 420) {
+      triggerSteps = 2;
+    } else if (CAB_STEPS >= 240 && CAB_STEPS <= 280) {
+      triggerSteps = 3;
+    } else if (CAB_STEPS >= 110 && CAB_STEPS <= 150) {
+      triggerSteps = 4;
+    } else if (CAB_STEPS >= 0 && CAB_STEPS <= 60) {
+      triggerSteps = 5;
+    } else if (CAB_STEPS >= 910 && CAB_STEPS <= 950) {
+      triggerSteps = 6;
+    } else if (CAB_STEPS >= 770 && CAB_STEPS <= 820) {
+      triggerSteps = 7;
+    } else if (CAB_STEPS >= 640 && CAB_STEPS <= 690) {
+      triggerSteps = 8;
+    }
+    return triggerSteps;
   }
-  return triggerSteps;
-}
+#else
+  // USB Values (~5V)
+  int getCABAction() {
+    CAB_ACTION = analogRead(6);
+    if (CAB_ACTION >= 580 && CAB_ACTION <= 620) {
+      triggerCAB = 0;
+    } else if (CAB_ACTION >= 480 && CAB_ACTION <= 520) {
+      triggerCAB = 1;
+    } else if (CAB_ACTION >= 380 && CAB_ACTION <= 420) {
+      triggerCAB = 2;
+    }
+    return triggerCAB;
+  }
+  
+  int getCABSteps() {
+    CAB_STEPS = analogRead(7);
+    if (CAB_STEPS >= 380 && CAB_STEPS <= 420) {
+      triggerSteps = 1;
+    } else if (CAB_STEPS >= 280 && CAB_STEPS <= 320) {
+      triggerSteps = 2;
+    } else if (CAB_STEPS >= 180 && CAB_STEPS <= 220) {
+      triggerSteps = 3;
+    } else if (CAB_STEPS >= 80 && CAB_STEPS <= 120) {
+      triggerSteps = 4;
+    } else if (CAB_STEPS >= 80 && CAB_STEPS <= 120) {
+      triggerSteps = 5;
+    } else if (CAB_STEPS >= 680 && CAB_STEPS <= 720) {
+      triggerSteps = 6;
+    } else if (CAB_STEPS >= 580 && CAB_STEPS <= 620) {
+      triggerSteps = 7;
+    } else if (CAB_STEPS >= 480 && CAB_STEPS <= 520) {
+      triggerSteps = 8;
+    }
+    return triggerSteps;
+  }
+#endif
 
 void buzzer() {
   if (BUZZER_STATUS) {
@@ -1028,11 +1076,11 @@ void buzzerHour() {
 }
 
 void getDateTime() {
-  
-  String tm_hour; 
-  String tm_minute;
-  String tm_month = String(tm.Month+1);
-  String tm_date = String(tm.Day);
+
+  if (tm.Month && tm.Day) {
+    tm_month = String(tm.Month+1);
+    tm_date = String(tm.Day);
+  }
 
   if (RTC.read(tm)) {
     if (tm.Hour<10) {
@@ -1050,7 +1098,7 @@ void getDateTime() {
     getTime = tm_hour + ":" + tm_minute;
   } else {
     getDate = "Clock error!";
-    getTime = "00:00";
+    getTime = "";
   }
  
 }
