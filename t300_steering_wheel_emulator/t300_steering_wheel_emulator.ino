@@ -63,10 +63,12 @@ int encoderDecCount = 0;
 // Setup LCD & vars
 LiquidCrystal_I2C lcd(0x27, 16, 2);                   // Connects to 3.3V, GND, A4 (SDA), A5 (SCL)
 int           curValue = -100;
-String        prevLine_1;
-String        prevLine_2;
 void          printDisplay(String line_1="", int pos_1=0, String line_2="", int pos_2=0);
 unsigned long displayTime;                            // Used for delaying the screen message
+String        line_1;
+String        line_2;
+String        prev_line_1;
+String        prev_line_2;
 
 
 // Setup Real Time Clock
@@ -214,6 +216,8 @@ void setup() {
   if (BUZZER_STATUS) {
     buzzerStartup();
   }
+
+  getDateTime();
 
 }
 
@@ -694,8 +698,8 @@ void loop() {
   
   // Reset Display if nothing is pressed for the MESSAGE_DURATION
   if (menu == 0) {
-    if ((millis()-displayTime) > MESSAGE_DURATION) { // Change only if there's a change
-      showMenu(); // Too much delay
+    if ((millis()-displayTime) > MESSAGE_DURATION) { // Update display only if there's a change
+      showMenu(); // Too much delay here <- Need to fix
       curValue = buttonValue;
       encoderIncCount = 0;
       encoderDecCount = 0;
@@ -711,18 +715,19 @@ void loop() {
     }
   }
 
-
   #if DEBUG_RESPONSE
     Serial.println(micros() - startLoop);
   #endif
   
   // Set a delay and reset the keyValue to something that will never match an exisitng keyValue
   delay(DEBOUNCE);
+  
   resetVars();
 
 }
 
 void resetVars() {
+  // Default Wheel State for the Thrustmaster F1
   wheelState[0] = B11001111;
   wheelState[1] = B11111111;
   wheelState[2] = B11111111;
@@ -756,15 +761,15 @@ void scanButtonMatrix() {
 }
 
 void printDisplay(String line_1="", int pos_1=0, String line_2="", int pos_2=0) {
-  if (prevLine_1 != line_1 || prevLine_2 != line_2) {
+  if (prev_line_1 != line_1 || prev_line_2 != line_2) {
     lcd.clear();
+    lcd.setCursor(pos_1, 0);
+    lcd.print(line_1);
+    lcd.setCursor(pos_2, 1);
+    lcd.print(line_2);
+    prev_line_1 = line_1;
+    prev_line_2 = line_2;
   }
-  lcd.setCursor(pos_1, 0);
-  lcd.print(line_1);
-  lcd.setCursor(pos_2, 1);
-  lcd.print(line_2);
-  prevLine_1 = line_1;
-  prevLine_2 = line_2;
   displayTime = millis();
 }
 
@@ -813,11 +818,11 @@ void showMenu() {
     }
     delay(DEBOUNCE);
   } else {
-    if (DISPLAY_STATUS) {
+    if (DISPLAY_STATUS) { // && (prev_line_1 != line_1 || prev_line_2 != line_2)
       getDateTime();
-      String message_line1 = getDate + "      " + getTime;
-      String message_line2 = MENU;
-      printDisplay(message_line1, 0, message_line2, 0);
+      line_1 = getDate + "      " + getTime;
+      line_2 = MENU;
+      printDisplay(line_1, 0, line_2, 0);
     }
   }
 };
@@ -925,8 +930,8 @@ void displayRuntime() {
   int runtimeColumn = 4;
   int runtimeRow = 0;
   
-  prevLine_1 = " ";
-  prevLine_2 = " ";
+  prev_line_1 = " ";
+  prev_line_2 = " ";
   displayTime = millis();
 
   unsigned long allSeconds=millis()/1000;
@@ -1039,7 +1044,7 @@ void resetMenu() {
       triggerSteps = 3;
     } else if (CAB_STEPS >= 80 && CAB_STEPS <= 120) {
       triggerSteps = 4;
-    } else if (CAB_STEPS >= 80 && CAB_STEPS <= 120) {
+    } else if (CAB_STEPS >= 00 && CAB_STEPS <= 40) {
       triggerSteps = 5;
     } else if (CAB_STEPS >= 680 && CAB_STEPS <= 720) {
       triggerSteps = 6;
@@ -1077,10 +1082,8 @@ void buzzerHour() {
 
 void getDateTime() {
 
-  if (tm.Month && tm.Day) {
-    tm_month = String(tm.Month+1);
-    tm_date = String(tm.Day);
-  }
+  tm_month = String(tm.Month+1);
+  tm_date = String(tm.Day);
 
   if (RTC.read(tm)) {
     if (tm.Hour<10) {
