@@ -18,7 +18,7 @@
 #define       DEBUG_WHEEL false                       // Debug wheel output
 #define       Rotary_Switch_T300 true                 // Select the values for the Rotary Switches. 'true:T300', 'false:USB'
 #define       MESSAGE_DURATION 750                    // Duration of the messages on the screen
-#define       DEBOUNCE 120                            // Set this to the lowest value that gives the best result
+#define       DEBOUNCE 80                            // Set this to the lowest value that gives the best result
 
 #define       MENU "~Ready"
 #define       LOADING "Loading..."
@@ -117,7 +117,7 @@ int           colSize = sizeof(colPin)/sizeof(colPin[0]);
 
 
 // Button Matrix
-//      Cols  |  0              1               2               4               5
+//      Cols  |  0              1               2               3               4
 // Rows Pins  |  14/A0          15/A1           16/A2           17/A3           11
 // ---------------------------------------------------------------------------------------------
 // 0    5     |  204 Triangle   225 Circle      247 Up          270 L2          147 L1
@@ -198,7 +198,9 @@ void setup() {
       Serial.print(" is set as OUTPUT on row: ");
       Serial.println(i);
     #endif
+    digitalWrite(rowPin[i], HIGH);
   }
+  
 
   // Column setup
   //
@@ -677,12 +679,12 @@ void loop() {
   }
 
   // CAB Trigger 
-  if (triggerStepsIncrease > 0 && ((millis()-cabTrigger) > (DEBOUNCE*2))) {
+  if (triggerStepsIncrease >= 1 && ((millis()-cabTrigger) > DEBOUNCE*2)) {
     wheelState[CABActionGuide[triggerCAB][1][0]] = wheelState[CABActionGuide[triggerCAB][1][0]] & CABActionGuide[triggerCAB][1][1];
     triggerStepsIncrease--;
     cabTrigger = millis();
   }
-  if (triggerStepsDecrease > 0 && ((millis()-cabTrigger) > (DEBOUNCE*2))) {
+  if (triggerStepsDecrease >= 1 && ((millis()-cabTrigger) > DEBOUNCE*2)) {
     wheelState[CABActionGuide[triggerCAB][0][0]] = wheelState[CABActionGuide[triggerCAB][0][0]] & CABActionGuide[triggerCAB][0][1];
     triggerStepsDecrease--;
     cabTrigger = millis();
@@ -697,7 +699,7 @@ void loop() {
   #endif
   
   // Reset Display if nothing is pressed for the MESSAGE_DURATION
-  if (menu == 0) {
+  if (menu == 0 && DISPLAY_STATUS) {
     if ((millis()-displayTime) > MESSAGE_DURATION) { // Update display only if there's a change
       showMenu(); // Too much delay here <- Need to fix
       curValue = buttonValue;
@@ -741,10 +743,6 @@ void resetVars() {
 
 void scanButtonMatrix() {
   for (int rowCounter=0; rowCounter<rowSize; rowCounter++) {
-    // Set all rowPins to HIGH
-    for(int i=0; i<rowSize; i++) {
-      digitalWrite(rowPin[i], HIGH);
-    }
     // Set the active rowPin to LOW
     digitalWrite(rowPin[rowCounter], LOW);
     // Then we scan all cols in the col[] array
@@ -752,11 +750,12 @@ void scanButtonMatrix() {
       // Scan each pin in column
       foundColumn = digitalRead(colPin[colCounter]);
       // If we find a column
-      if(foundColumn==0){
+      if(foundColumn == LOW){
         // Using a Cantor Pairing function we create unique number
         buttonValue = (((rowPin[rowCounter]+colPin[colCounter]) * (rowPin[rowCounter]+colPin[colCounter]+1)) / 2 + colPin[colCounter]);
       }
     }
+    digitalWrite(rowPin[rowCounter], HIGH);
   }
 }
 
