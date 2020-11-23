@@ -63,7 +63,7 @@ I won't get into too much detail on that code here, but you are welcome to view 
 The wheel behaves very much like any other wheel on the market. It emulates all of the Playstation DualShock 4 controller buttons. The main differences are **Button Matrix**, **Display Menu**, **Rotary Encoders** and the **Rotary Switches** (CAB Functions).
 
 ### Button Matrix
-In the name of saving PDIO's on the Nano, I created a 5x5 Button Matrix to support the 22 buttons I required for my design (yes, I have 3 to spare!).
+In the name of saving GPIO's on the Nano, I created a 5x5 Button Matrix to support the 22 buttons I required for my design (yes, I have 3 to spare!).
 
 ---
 
@@ -115,7 +115,7 @@ The idea is to create a set buttons that can replicate mutliple clicks depending
 * **CAB -/+:** When selecting the CAB -/+ button, it will execute on your selected preferences
 
 ## Putting it all together
-I wanted to keep things as compact as possible so a custom board was required. I also wanted things to be removeable and interchangeable in case there is failure in the future. My intention was to create a custom pritned PCB but it really did not make sense at this point in time (maybe in an update?). The final board is made up of a 5x7cm perfboard and I used solid core wire to make the connections.
+I wanted to keep things as compact as possible so a custom board was required. I also wanted things to be removeable and interchangeable in case there is failure in the future. My intention was to create a custom printed PCB but it really did not make sense at this point in time (maybe in an update?). The final board is made up of a 5x7cm perfboard and I used solid core wire to make the connections.
 
 Although my first attempt (v1) functioned perfectly it was not as compact as I'd like. In fact, it did not fit into the steering enclosure at all. I redesigned the tracks and rebuilt a second version (v2) using angled DuPont male connectors, saving a lot of space due to a limited height.
 
