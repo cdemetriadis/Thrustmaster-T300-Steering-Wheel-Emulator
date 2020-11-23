@@ -16,6 +16,7 @@
 #define       DEBUG_KEYS false                        // Debug the button presses
 #define       DEBUG_RESPONSE false                    // Debug the response time
 #define       DEBUG_WHEEL false                       // Debug wheel output
+#define       DEBUG_ROTARY_SWITCHES false             // Debug Rotary Switches
 #define       Rotary_Switch_T300 true                 // Select the values for the Rotary Switches. 'true:T300', 'false:USB'
 #define       MESSAGE_DURATION 750                    // Duration of the messages on the screen
 #define       DEBOUNCE 80                            // Set this to the lowest value that gives the best result
@@ -116,6 +117,7 @@ int           rowSize = sizeof(rowPin)/sizeof(rowPin[0]);
 int           colSize = sizeof(colPin)/sizeof(colPin[0]);
 
 
+
 // Button Matrix
 //      Cols  |  0              1               2               3               4
 // Rows Pins  |  14/A0          15/A1           16/A2           17/A3           11
@@ -129,7 +131,7 @@ int           colSize = sizeof(colPin)/sizeof(colPin[0]);
 
 void setup() {
   
-  resetVars();
+  resetWheelState();
 
   #if DEBUG_SETUP || DEBUG_KEYS || DEBUG_WHEEL || DEBUG_RESPONSE
      Serial.begin(115200);    // Arduino debug console
@@ -262,6 +264,14 @@ void loop() {
   
   #if DEBUG_RESPONSE
     unsigned long startLoop = micros();
+  #endif
+
+  #if DEBUG_ROTARY_SWITCHES
+    Serial.println("---");
+    Serial.println(analogRead(6));
+    Serial.println(analogRead(7));
+    Serial.println("---");
+    Serial.println();
   #endif
   
   if (digitalRead(IntPin) == LOW) {
@@ -724,11 +734,11 @@ void loop() {
   // Set a delay and reset the keyValue to something that will never match an exisitng keyValue
   delay(DEBOUNCE);
   
-  resetVars();
+  resetWheelState();
 
 }
 
-void resetVars() {
+void resetWheelState() {
   // Default Wheel State for the Thrustmaster F1
   wheelState[0] = B11001111;
   wheelState[1] = B11111111;
@@ -747,14 +757,13 @@ void scanButtonMatrix() {
     digitalWrite(rowPin[rowCounter], LOW);
     // Then we scan all cols in the col[] array
     for (int colCounter=0; colCounter<colSize; colCounter++) {
-      // Scan each pin in column
-      foundColumn = digitalRead(colPin[colCounter]);
-      // If we find a column
-      if(foundColumn == LOW){
+      // Scan each pin in column and if it's LOW
+      if(digitalRead(colPin[colCounter]) == LOW){
         // Using a Cantor Pairing function we create unique number
         buttonValue = (((rowPin[rowCounter]+colPin[colCounter]) * (rowPin[rowCounter]+colPin[colCounter]+1)) / 2 + colPin[colCounter]);
       }
     }
+    // Set the active rowPin back to HIGH
     digitalWrite(rowPin[rowCounter], HIGH);
   }
 }
@@ -817,12 +826,10 @@ void showMenu() {
     }
     delay(DEBOUNCE);
   } else {
-    if (DISPLAY_STATUS) { // && (prev_line_1 != line_1 || prev_line_2 != line_2)
       getDateTime();
       line_1 = getDate + "      " + getTime;
       line_2 = MENU;
       printDisplay(line_1, 0, line_2, 0);
-    }
   }
 };
 
@@ -928,10 +935,6 @@ void displayRuntime() {
   lcd.clear();
   int runtimeColumn = 4;
   int runtimeRow = 0;
-  
-  prev_line_1 = " ";
-  prev_line_2 = " ";
-  displayTime = millis();
 
   unsigned long allSeconds=millis()/1000;
   int runHours= allSeconds/3600;
@@ -1081,10 +1084,8 @@ void buzzerHour() {
 
 void getDateTime() {
 
-  tm_month = String(tm.Month+1);
-  tm_date = String(tm.Day);
-
   if (RTC.read(tm)) {
+    
     if (tm.Hour<10) {
       tm_hour = "0" + String(tm.Hour);
     } else {
@@ -1096,8 +1097,9 @@ void getDateTime() {
       tm_minute = String(tm.Minute);
     }
 
-    getDate = tm_date + "/" + tm_month;
+    getDate = String(tm.Day) + "/" + String(tm.Month+1);
     getTime = tm_hour + ":" + tm_minute;
+    
   } else {
     getDate = "Clock error!";
     getTime = "";
