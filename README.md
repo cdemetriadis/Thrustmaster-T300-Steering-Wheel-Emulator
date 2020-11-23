@@ -17,7 +17,7 @@ I set my goals high and made a list of things I wanted the steering wheel to fea
 
 Since I do not have immediate access to a 3D printer or a CNC machine, I decided to go with one of [3DRap.it](https://www.3drap.it/product/f1-steering-wheel-kit-by-3drap-thrustmaster-logitech-osw/)'s designs. With the help of Antonio, we designed a much simpler version of the current wheel they have on stock, and one that matches my design below.
 
-![F1 Steering Wheel](assets/f1-wheel-emulator.jpg)
+![F1 Steering Wheel](assets/F1-wheel-emulator.jpg)
 
 ### Stickers & Labels
 
