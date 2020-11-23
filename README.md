@@ -59,10 +59,10 @@ Following that, I found the reverse engineered Thrustmaster F1 Wheel bits & byte
 I won't get into too much detail on that code here, but you are welcome to view it [in the repo](t300_steering_wheel_emulator/t300_steering_wheel_emulator.ino). I've added as many comments as possible. Here's what it does:
 
 
-### Functions
+## The Functions
 The wheel behaves very much like any other wheel on the market. It emulates all of the Playstation DualShock 4 controller buttons. The main differences are **Button Matrix**, **Display Menu**, **Rotary Encoders** and the **Rotary Switches** (CAB Functions).
 
-### The Button Matrix
+### Button Matrix
 In the name of saving PDIO's on the Nano, I created a 5x5 Button Matrix to support the 22 buttons I required for my design (yes, I have 3 to spare!).
 
 ---
@@ -71,7 +71,7 @@ In the name of saving PDIO's on the Nano, I created a 5x5 Button Matrix to suppo
 
 ---
 
-### The Display Menu
+### Display Menu
 There were a few reasons I wanted a display. **First,** I needed a way to change the wheel settings without the need to connect it to a computer. **Second,** I also thought it be nice to have a clock to display the real-world time & date. **Third,** the display could be used in future updates to display telemetry... (but nothing planned yet). **And finally,** it just looks cool.
 
 The display is controlled by the three display buttons (MENU, NEXT & SELECT) and has the following options:
@@ -86,11 +86,26 @@ The display is controlled by the three display buttons (MENU, NEXT & SELECT) and
 6. **Display Runtime** - Display the time since the steering wheel booted, so you know how long it's been running
 
 
-### The Rotary Encoders
+### Rotary Encoders
 The Rotary Encoders allow for quick access the **Brake Balance**, **ABS** and **Traction Control** adjustments while driving. Rotary Encoders are cool because you can quickly tweak settings without needing to distract yourself with on screen menus etc.
 
+The Rotary encoders have been mapped as follows:
 
-### The CAB (Combined Action Buttons)
+| Description                    | Left Rot. (-) | Right Rot. (+) |
+| ------------------------------ | ------------- | -------------- |
+| Brake Balance (BB)             | D-Pad Down    | D-Pad Up       |
+| Antilock Braking System (ABS)  | L3            | R3             |
+| Traction Control (TC )         | D-Pad Left    | D-Pad Right    |
+
+---
+
+:link: Here is the list of [**control bindings**](button-mapping.md) I've applied in Assetto Corsa Competizione.
+
+---
+
+
+
+### CAB (Combined Action Buttons)
 This is something I thought about while watching a video where **Nico Rosberg** was explaining how you need to shift the Brake Balance from the front to the rear and back multiple times on a single lap to optimise your driving. You can of course use the Rotary Encoders, but you can't be precise, especially with the force feedback kicking on your wheel.
 
 The idea is to create a set buttons that can replicate mutliple clicks depending on your preferences. Using the Rotary Switches, you can quickly set the parameters:

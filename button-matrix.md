@@ -3,7 +3,7 @@
 I've used a Cantor Pairing function to create unique numbers for each button matrix cell. These numbers are then converted to actions using a case switch.
 
 |          | **Cols** | **0**        | **1**       | **2**       | **3**       | **4**   |
-| -------  | -------- | ------------ | ----------- | ----------- | ----------- | ------- |
+| -------- | -------- | ------------ | ----------- | ----------- | ----------- | ------- |
 | **Rows** | **Pins** | **14** (A0)  | **15** (A1) | **16** (A2) | **17** (A3) | **D11** |
 | **0**    | **D5**   | 204 Triangle | 225 Circle  | 247 Up      | 270 L2      | 147 L1  |
 | **1**    | **D6**   | 224 Square   | 246 Cross   | 269 Down    | 293 R2      | 164 R1  |
