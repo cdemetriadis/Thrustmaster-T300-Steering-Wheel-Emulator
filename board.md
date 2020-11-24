@@ -1,6 +1,6 @@
 # The Board
 
-The below is a representation of the final board design.
+The below is a representation of the final board design. Don;t forget to visit [Tara's blog post](http://rr-m.org/blog/thrustmaster-t300rs-steering-wheel-arduino-emulator/) for more details on how to connect the Arduno to the base.
 
 ##### Notes:
 1. I ended up soldering the RTC package onto the main board to save space
