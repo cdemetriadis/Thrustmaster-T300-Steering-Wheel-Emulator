@@ -40,7 +40,7 @@ The most important thing to remember with the hardware is that the Thrustmaster 
 From the very beginning, the idea was to build this around an **Arduino Nano** board. I've had previous experience with this platform and the fact that I found some starting points on the internet made this decision easy.
 
 ### The Display
-Next up was the display. I just wanted the display as a means for me to view and edit settings on the wheel itslef, not to connect or view telemetry. So, a simple 16x2 backlit LCD would suffice. To keep the GPIO's limited, I also added an I<sup>2</sup>C backpack.
+Next up was the display. I just wanted the display as a means for me to view and edit settings on the wheel itslef, not to connect or view telemetry. So, a simple 16x2 backlit LCD would suffice. To keep the GPIO's limited, I also added an I<sup>2</sup>C Backpack.
 
 ### The Rotary Encoders
 The Rotary Encoders were a bit of trouble as the Arduono Nano does not support many GPIO's. At the end of the day, I went with three DuppaNet I<sup>2</sup>C Rotary Encoder Mini v2.1 boards. They work great, never miss a hit and require only 3 GPIO's total.
