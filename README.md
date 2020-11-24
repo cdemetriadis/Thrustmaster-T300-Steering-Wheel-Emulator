@@ -114,7 +114,7 @@ The Rotary encoders have been mapped as follows:
 
 ---
 
-:link: Here is the list of [**control bindings**](button-mapping.md) I've applied in Assetto Corsa Competizione.
+:link: Here is the map of [**control bindings**](control-bindings.md) I've applied in Assetto Corsa Competizione.
 
 ---
 

@@ -1,6 +1,6 @@
-# Button Mapping
+# Wheel Control Bindings
 
-Here are all the control bindings I've set in Assetto Corsa Competizione. These are mapped for the Playstation DualShock 4 controller.
+Here are all the control bindings I've set in **Assetto Corsa Competizione**. These are mapped for the Playstation DualShock 4 controller.
 
 | Wheel          | PlayStation     | Assetto Corsa Competizione |
 | -------------- | --------------- | -------------------------- |
