@@ -160,3 +160,7 @@ A small space to acknowledge the work done previously by others.
 * **mrfid72** - For the awesome [Youtube Video](https://www.youtube.com/watch?v=84y5oYVXSMM) explaining the Analog Rotary Switches
 * **Danny van den Brande** - For the code I found online that helped me setup the button matrix
 * **Antonio De Stefano** [https://3drap.it](https://3drap.it) - For the awesome Steering Wheel enclosure
+
+## License
+
+[GNU General Public License v3.0 or later](LICENSE.md)
