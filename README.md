@@ -40,7 +40,7 @@ The Rotary Encoders were a bit of trouble as the Arduono Nano does not support m
 Finally, for the Rotary Switches I used two Mini 8-way Rotary Switches, each one driving a single analog GPIO, reducing the required GPIO's even more. The idea is pretty simple, and you can [find out more here](https://www.instructables.com/Arduino-Rotary-Switch-One-Analogue-Input/).
 
 ### The Buttons
-I needed 22 buttons to perform all of the funcitons I planned. I sourced them from multiple online vendors with no particular one to mention. Most buttons are simple temporary (ON)-OFF switches with the exception of the (ON)-OFF-(ON) toggles. For the paddle shifters 3Drap.it supplies heavy duty microswitches that fit snuggly into the housing. 
+I needed 22 buttons to perform all of the funcitons I planned. I sourced them from multiple online vendors with no particular one to mention. Most buttons are simple temporary (ON)-OFF switches with the exception of the (ON)-OFF-(ON) toggles. For the paddle shifters 3Drap.it supplies heavy duty microswitches that fit snuggly into the enclosure. 
 
 ---
 
@@ -144,4 +144,4 @@ A small space to acknowledge the work done previously by others.
 * **Bram Harmsen** [https://www.thingiverse.com/thing:2813599](https://www.thingiverse.com/thing:2813599) - For reverse engineeirng the F1 steering wheel
 * **mrfid72** - For the awesome [Youtube Video](https://www.youtube.com/watch?v=84y5oYVXSMM) explaining the Analog Rotary Switches
 * **Danny van den Brande** - For the code I found online that helped me setup the button matrix
-* **Antonio De Stefano** [https://3drap.it](https://3drap.it) - For the awesome Steering Wheel housing
+* **Antonio De Stefano** [https://3drap.it](https://3drap.it) - For the awesome Steering Wheel enclosure

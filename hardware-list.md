@@ -16,9 +16,9 @@ Here's a detailed list of everything that went into building the steering wheel.
 0. 1x 5x7cm perfboard
 0. 1x [20cm USB-Mini extension](https://www.ebay.co.uk/itm/30cm-Angle-Mini-USB-5Pin-Male-to-Female-Extension-Adapter-Cable-Panel-Mount-Type/232825989994?ssPageName=STRK%3AMEBIDX%3AIT&var=532338614735&_trksid=p2057872.m2749.l2649)
 0. 1x [6 Pin Mini-din adapter](https://www.3drap.it/product/mini-din-6-replacement-part-for-thrustmaster-wheels/)
-0. 1x Steering Wheel housing ([F1 Kit by 3Drap.it](https://www.3drap.it/product/f1-steering-wheel-kit-by-3drap-thrustmaster-logitech-osw/))
+0. 1x Steering Wheel enclosure ([F1 Kit by 3Drap.it](https://www.3drap.it/product/f1-steering-wheel-kit-by-3drap-thrustmaster-logitech-osw/))
 0. Lots of 24-30AWG wires
-0. Lots of DuPont type connectors
+0. Lots of Dupont type connectors
 0. Various heatshrink tubes
 
 ## Tools

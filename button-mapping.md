@@ -14,10 +14,10 @@ Here are all the control bindings I've set in Assetto Corsa Competizione. These 
 | R2 / Lights    | **R2**          | Cycle Lights               |
 | L3             | **L3**          | Decrease ABS               |
 | R3             | **R3**          | Increase ABS               |
-| D-pad Up       | **D-Pad Up**    | Increase Brake Balance     |
-| D-pad Down     | **D-Pad Down**  | Decrease Brake Balance     |
-| D-pad Right    | **D-Pad Right** | Increase Traction Control  |
-| D-pad Left     | **D-Pad Left**  | Decrease Traction Control  |
+| Toggle Up      | **D-Pad Up**    | Increase Brake Balance     |
+| Toggle Down    | **D-Pad Down**  | Decrease Brake Balance     |
+| Toggle Right   | **D-Pad Right** | Increase Traction Control  |
+| Toggle Left    | **D-Pad Left**  | Decrease Traction Control  |
 
 
 

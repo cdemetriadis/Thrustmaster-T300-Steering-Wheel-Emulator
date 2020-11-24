@@ -1,6 +1,6 @@
 # Button Matrix
 
-I've used a Cantor Pairing function to create unique numbers for each button matrix cell. These numbers are then converted to actions using a case switch.
+I've used a [Cantor Pairing Function](https://en.wikipedia.org/wiki/Pairing_function#Cantor_pairing_function) to create unique numbers for each button matrix cell. These numbers are then converted to actions using a case switch in the main sketch file.
 
 |          | **Cols** | **0**        | **1**       | **2**       | **3**       | **4**   |
 | -------- | -------- | ------------ | ----------- | ----------- | ----------- | ------- |
