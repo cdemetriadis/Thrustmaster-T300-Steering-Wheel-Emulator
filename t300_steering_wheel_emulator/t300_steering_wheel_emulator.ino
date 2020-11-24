@@ -12,7 +12,9 @@
 #include      <i2cEncoderMiniLib.h>                   // Load I2C encoderBB Library
 #include      <TimeLib.h>                             // Load Time Library
 #include      <DS1307RTC.h>                           // Load the DS1307 RTC Library
- 
+
+//
+// Debugging & Setup 
 #define       DEBUG_SETUP false                       // Debug Setup information
 #define       DEBUG_KEYS false                        // Debug the button presses
 #define       DEBUG_WHEEL false                       // Debug wheel output
@@ -22,6 +24,8 @@
 #define       MESSAGE_DURATION 750                    // Duration of the messages on the screen
 #define       DEBOUNCE 80                             // Set this to the lowest value that gives the best result
 
+//
+// Display Strings
 #define       MENU "~Ready"
 #define       LOADING "Loading..."
 #define       SELECT_OPTION " Select Option:"
@@ -221,8 +225,6 @@ void setup() {
     buzzerStartup();
   }
 
-//  getDateTime();
-
 }
 
 
@@ -318,12 +320,6 @@ void loop() {
       if (DISPLAY_STATUS) {
         if (menu == 1) {
           resetMenu();
-        } else if (menu == 2) {
-          menu = 1;
-          menuPage = 1;
-        } else if (menu == 3) {
-          menu = 1;
-          menuPage = 2;
         } else {
           menuPage = 1;
           menu = 1;
