@@ -269,11 +269,11 @@ void loop() {
   #endif
 
   #if DEBUG_ROTARY_SWITCHES
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print(analogRead(6));
-    lcd.setCursor(0, 1);
-    lcd.print(analogRead(7));
+    Serial.println("---");
+    Serial.println(analogRead(6));
+    Serial.println(analogRead(7));
+    Serial.println("---");
+    Serial.println();
   #endif
   
   if (digitalRead(ENC_INTERRUPT_PIN) == LOW) {
