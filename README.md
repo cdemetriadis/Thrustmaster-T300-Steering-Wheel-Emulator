@@ -128,11 +128,11 @@ Although my first attempt (v1) functioned perfectly it was not as compact as I'd
 ## Debugging and performance
 The first software version had quite a few issues, with latency being the largest. Every now and then a button click would be missed which during a race this meant an misfire on an upshift or a downshift. This made up for some bad performance.
 
-After running tests I discovered that a single loop ran at around 1700ms with an eventual hiccup every second at around 106000ms. It was abvious that something was producing some type of delay. I eventually optimised the code for the Rotary Encoders and the Clock (RTC). 
+After running tests I discovered that a single loop ran at around 2800ms with an eventual hiccup every second at around 106000ms. It was abvious that something was producing some type of delay. I eventually optimised the code for the Rotary Encoders and the Clock (RTC). 
 
-**The final version of the code running on the Arduino Nano with all the hardware connected has a loop latency of about ~190ms**. When the display is on, there's a hiccup every 750ms with a latency of ~2.000ms - this is due to the display refreshing every 750ms.
+#### The final version of the code running on the Arduino Nano with all the hardware connected has a steady loop latency of about ~2000ms. When the display is turned off the latency drops to 200ms (roughly 0.0002 seconds).
 
-Since the display does not add much to the driving experience, I opt to turn it off while driving. That's why I added a shortcut to the ABS Rotary Switch, when it's long-pressed it turns the display off.
+Since the display does not add much to the driving experience, you can opt to turn it off while driving by long-pressing the ABS Rotary Switch.
 
 The current version works seamlessly and I have not noticed any misfires during racing.
 
