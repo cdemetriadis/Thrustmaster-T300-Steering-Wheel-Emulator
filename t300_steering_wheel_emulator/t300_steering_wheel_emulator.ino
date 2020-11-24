@@ -717,7 +717,7 @@ void loop() {
   #endif
 
   
-  // Set a delay and reset the keyValue to something that will never match an exisitng keyValue
+  // Set a debounce delay
   delay(DEBOUNCE);
   
   resetWheelState();
