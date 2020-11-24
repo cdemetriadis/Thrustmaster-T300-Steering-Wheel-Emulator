@@ -125,7 +125,7 @@ void displaySelect() {
     toggleDisplayKeypress();
   }
   if (menu == 1 && menuPage == 3) { // Display Off
-    toggleBacklight();
+    turnDisplayOff();
   }
   if (menu == 1 && menuPage == 4) { // Buzzer Status
     toggleBuzzerStatus();
@@ -170,7 +170,7 @@ void toggleDisplayKeypress() {
 
 //
 // Turn the Display off 
-void toggleBacklight() {
+void turnDisplayOff() {
   printDisplay(DISPLAY_STATUS_OFF, 2);
   delay(MESSAGE_DURATION);
   lcd.noDisplay();

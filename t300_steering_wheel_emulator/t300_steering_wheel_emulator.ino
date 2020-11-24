@@ -155,7 +155,7 @@ void setup() {
   encoderABS.begin(i2cEncoderMiniLib::IPUP_ENABLE);
   encoderABS.onIncrement = encoderABS_increment;
   encoderABS.onDecrement = encoderABS_decrement;
-  encoderABS.onButtonLongPush = toggleBacklight;
+  encoderABS.onButtonLongPush = turnDisplayOff;
   encoderABS.writeDoublePushPeriod(50);
   encoderTC.begin(i2cEncoderMiniLib::IPUP_ENABLE);
   encoderTC.onIncrement = encoderTC_increment;
