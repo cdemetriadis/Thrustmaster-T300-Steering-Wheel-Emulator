@@ -34,7 +34,7 @@ The stickers were printed using a standard inkjet on an A4 sticker sheet, and th
 ---
 
 ## The Hardware
-The most important thing to rememebr with the hardware is that the Thrustmaster base powers your steering wheel with ~3,5V. Everything you use should be able to run on that voltage.
+The most important thing to remember with the hardware is that the Thrustmaster base powers your steering wheel with ~3,5V. Everything you use should be able to run on that voltage.
 
 ### The Brains
 From the very beginning, the idea was to build this around an **Arduino Nano** board. I've had previous experience with this platform and the fact that I found some starting points on the internet made this decision easy.
