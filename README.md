@@ -1,6 +1,10 @@
 # Thrustmaster T300 Steering Wheel Emulator
 
-This project started when I decided to get a steering wheel that would suit my personal sim driving needs, something that represented the driving experience with realism and no frills. **This build is intended for use with a Thrustmaster T300 (direct plugin), Playstation 4 and Assetto Corsa Competizione,** but it should work on other Thrustmaster bases and simulators. 
+This project started when I decided to update my steering wheel so that it would suit my personal sim driving requirements, something that represented the driving experience with **realism** and **no frills**.
+
+#### This build is intended for use with a Thrustmaster T300 Base (direct plugin), Playstation 4 Pro and Assetto Corsa Competizione. 
+
+But, having said that, it should work with **any compatible Thrustmaster Base and Console**, since it's emulating the F1 Steering Wheel (Adnvaced for PC mode not suppoorted/tested yet).
 
 ## The Build
 
@@ -9,7 +13,7 @@ I set my goals high and made a list of things I wanted the steering wheel to fea
 ### Features
 
 1. The steerig wheel should feature all of the buttons available on the Playstation DualShock 4 controller
-2. I wanted to include a display for settings related to the steering wheel (and possibly future proofing)
+2. I wanted to include a display for settings related to the steering wheel (and possibly future updates)
 3. Rotary encoders for quick access to necessary driving functions (Brake Balance, ABS & Traction Control)
 4. I wanted to also include a custom Combined Action Button (CAB) that would enable me to increase or decrease - with a single click - any of the above functions an X amount of times.
 
