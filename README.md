@@ -19,14 +19,19 @@ I set my goals high and made a list of things I wanted the steering wheel to fea
 
 ### Design
 
-Since I do not have immediate access to a 3D printer or a CNC machine, I decided to go with one of [3DRap.it](https://www.3drap.it/product/f1-steering-wheel-kit-by-3drap-thrustmaster-logitech-osw/)'s designs. With the help of Antonio, we designed a much simpler version of the current wheel they have on stock, and one that matches my design below.
+Since I do not have immediate access to a 3D printer or a CNC machine, I decided to go with one of [3DRap.it](https://www.3drap.it/product/f1-steering-wheel-kit-by-3drap-thrustmaster-logitech-osw/)'s designs. With the help of Antonio, we designed a new version of the current wheel they have on stock, and one that matches my design below.
 
 ![F1 Steering Wheel](assets/F1-wheel-emulator.jpg)
 
 ### Stickers & Labels
 
-The stickers were printed using a standard inkjet on an A4 sticker sheet, and then covered with transparent packing tape. You can find and download the [**sticker sheet here** (pdf)](assets/f1-wheel-labels.pdf) :link: .
+The stickers were printed using a standard inkjet on an A4 sticker sheet, and then covered with transparent packing tape. 
 
+---
+
+:link: Download the [**sticker sheet here** (pdf)](assets/f1-wheel-labels.pdf).
+
+---
 
 ## The Hardware
 The most important thing to rememebr with the hardware is that the Thrustmaster base powers your steering wheel with ~3,5V. Everything you use should be able to run on that voltage.
@@ -60,11 +65,17 @@ My starting point was [this post by Taras](https://rr-m.org/blog/thrustmaster-t3
 
 Following that, I found the reverse engineered Thrustmaster F1 Wheel bits & bytes in a [project by Bram Harmsen](https://www.thingiverse.com/thing:2813599), which includes the L3 & R3 buttons, which in turn are generally not available on any other steering wheel. Having all of the information required to replicate all the actions, I started putting it all together.
 
-I won't get into too much detail on that code here, but you are welcome to view it [in the repo](t300_steering_wheel_emulator/t300_steering_wheel_emulator.ino). I've added as many comments as possible. Here's what it does:
+I won't get into too much detail on that code here, but you are welcome to view it [in the repo](t300_steering_wheel_emulator/t300_steering_wheel_emulator.ino). I've added as many comments as possible.
+
+---
+
+:link: View the [**Arduino Sketch files**](t300_steering_wheel_emulator/t300_steering_wheel_emulator.ino)
+
+---
 
 
 ## The Functions
-The wheel behaves very much like any other wheel on the market. It emulates all of the Playstation DualShock 4 controller buttons. The main differences are **Button Matrix**, **Display Menu**, **Rotary Encoders** and the **Rotary Switches** (CAB Functions).
+The wheel behaves very much like any other wheel on the market. It emulates all of the Playstation DualShock 4 controller buttons. The main differences are the **Button Matrix**, **Display Menu**, **Rotary Encoders** and the **Rotary Switches** (CAB Functions).
 
 ### Button Matrix
 In the name of saving GPIO's on the Nano, I created a 5x5 Button Matrix to support the 22 buttons I required for my design (yes, I have 3 to spare!).
