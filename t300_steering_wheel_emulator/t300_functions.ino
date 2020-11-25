@@ -14,13 +14,6 @@ void resetWheelState() {
 }
 
 //
-// Reset the Menu
-void resetMenu() {
-  menuPage = 1;
-  menu = 0;
-}
-
-//
 // The encoder's buttonValue. These will trigger the appropriate actions.
 void encoderBB_decrement(i2cEncoderMiniLib* obj) {
   buttonValue = 1100;
@@ -100,7 +93,6 @@ void showMenu() {
         printDisplay(HOUR_CHIRP_OFF, 0, DISPLAY_RUNTIME_ON, 0);
         break;
     }
-    delay(DEBOUNCE);
   } else {
     getDateTime();
     printDisplay(getDate + "      " + getTime, 0, MENU, 0);
@@ -178,7 +170,8 @@ void turnDisplayOff() {
   lcd.clear();
   DISPLAY_STATUS = 0;
   EEPROM.write(3, DISPLAY_STATUS);
-  resetMenu();
+  menuPage = 1;
+  menu = 0;
 }
 
 //
@@ -240,68 +233,70 @@ void displayRuntime() {
 //
 // USB: 5V - T300:3.3V
 #if Rotary_Switch_T300
-  int getCABAction() {
+  //
+  // Change the following values for the Thrustmaster T300 base
+  int getCABMode() {
     CAB_ACTION = analogRead(6);
     if (CAB_ACTION >= 770 && CAB_ACTION <= 820) {
-      triggerCAB = 0;
+      triggerCAB = 0; // BB Positin
     } else if (CAB_ACTION >= 640 && CAB_ACTION <= 690) {
-      triggerCAB = 1;
+      triggerCAB = 1; // ABS Position
     } else if (CAB_ACTION >= 510 && CAB_ACTION <= 550) {
-      triggerCAB = 2;
+      triggerCAB = 2; // TC1 Position
     }
     return triggerCAB;
   }
   int getCABSteps() {
     CAB_STEPS = analogRead(7);
     if (CAB_STEPS >= 510 && CAB_STEPS <= 550) {
-      triggerSteps = 1;
+      triggerSteps = 1; // 1x Position
     } else if (CAB_STEPS >= 390 && CAB_STEPS <= 420) {
-      triggerSteps = 2;
+      triggerSteps = 2; // 2x Position
     } else if (CAB_STEPS >= 240 && CAB_STEPS <= 280) {
-      triggerSteps = 3;
+      triggerSteps = 3; // 3x Position
     } else if (CAB_STEPS >= 110 && CAB_STEPS <= 150) {
-      triggerSteps = 4;
+      triggerSteps = 4; // 4x Position
     } else if (CAB_STEPS >= 0 && CAB_STEPS <= 60) {
-      triggerSteps = 5;
+      triggerSteps = 5; // 5x Position
     } else if (CAB_STEPS >= 910 && CAB_STEPS <= 950) {
-      triggerSteps = 6;
+      triggerSteps = 6; // 6x Position
     } else if (CAB_STEPS >= 770 && CAB_STEPS <= 820) {
-      triggerSteps = 7;
+      triggerSteps = 7; // 7x Position
     } else if (CAB_STEPS >= 640 && CAB_STEPS <= 690) {
-      triggerSteps = 8;
+      triggerSteps = 8; // 8x Position
     }
     return triggerSteps;
   }
 #else
-  int getCABAction() {
+  int getCABMode() {
     CAB_ACTION = analogRead(6);
     if (CAB_ACTION >= 580 && CAB_ACTION <= 620) {
-      triggerCAB = 0;
+      triggerCAB = 0; // BB Position
     } else if (CAB_ACTION >= 480 && CAB_ACTION <= 520) {
-      triggerCAB = 1;
+      triggerCAB = 1; // ABS Position
     } else if (CAB_ACTION >= 380 && CAB_ACTION <= 420) {
-      triggerCAB = 2;
+      triggerCAB = 2; // TC1 Position
     }
     return triggerCAB;
   }
   int getCABSteps() {
     CAB_STEPS = analogRead(7);
     if (CAB_STEPS >= 380 && CAB_STEPS <= 420) {
-      triggerSteps = 1;
+      triggerSteps = 1; // 1x Position
     } else if (CAB_STEPS >= 280 && CAB_STEPS <= 320) {
-      triggerSteps = 2;
+      triggerSteps = 2; // 2x Position
     } else if (CAB_STEPS >= 180 && CAB_STEPS <= 220) {
-      triggerSteps = 3;
+      triggerSteps = 3; // 3x Position
     } else if (CAB_STEPS >= 80 && CAB_STEPS <= 120) {
-      triggerSteps = 4;
+      triggerSteps = 4; // 4x Position
     } else if (CAB_STEPS >= 00 && CAB_STEPS <= 40) {
-      triggerSteps = 5;
+      triggerSteps = 5; // 5x Position
     } else if (CAB_STEPS >= 680 && CAB_STEPS <= 720) {
-      triggerSteps = 6;
+      triggerSteps = 6; // 6x Position
     } else if (CAB_STEPS >= 580 && CAB_STEPS <= 620) {
-      triggerSteps = 7;
+      triggerSteps = 7; // 7x Position
     } else if (CAB_STEPS >= 480 && CAB_STEPS <= 520) {
-      triggerSteps = 8;
+      triggerSteps = 8; // 8x Position
     }
     return triggerSteps;
   }
