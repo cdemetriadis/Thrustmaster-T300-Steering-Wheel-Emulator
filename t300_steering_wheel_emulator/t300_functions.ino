@@ -14,13 +14,6 @@ void resetWheelState() {
 }
 
 //
-// Reset the Menu
-void resetMenu() {
-  menuPage = 1;
-  menu = 0;
-}
-
-//
 // The encoder's buttonValue. These will trigger the appropriate actions.
 void encoderBB_decrement(i2cEncoderMiniLib* obj) {
   buttonValue = 1100;
@@ -104,7 +97,6 @@ void showMenu() {
     getDateTime();
     printDisplay(getDate + "      " + getTime, 0, MENU, 0);
   }
-  delay(DEBOUNCE);
 };
 
 //
@@ -178,7 +170,8 @@ void turnDisplayOff() {
   lcd.clear();
   DISPLAY_STATUS = 0;
   EEPROM.write(3, DISPLAY_STATUS);
-  resetMenu();
+  menuPage = 1;
+  menu = 0;
 }
 
 //

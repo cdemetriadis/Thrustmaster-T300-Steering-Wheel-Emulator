@@ -19,7 +19,7 @@
 #define       DEBUG_KEYS false                        // Debug the button presses
 #define       DEBUG_WHEEL false                       // Debug wheel output
 #define       DEBUG_ROTARY_SWITCHES false             // Debug Rotary Switches: Display the values returned by the Rotary Switches
-#define       DEBUG_LATENCY true                     // Debug response
+#define       DEBUG_LATENCY false                     // Debug response
 #define       Rotary_Switch_T300 true                 // Select the values for the Rotary Switches. 'true:T300', 'false:USB'
 #define       MESSAGE_DURATION 750                    // Duration of the messages on the screen
 #define       DEBOUNCE 80                             // Set this to the lowest value that gives the best result
@@ -326,11 +326,13 @@ void loop() {
       buzzer();
       if (DISPLAY_STATUS) {
         if (menu == 1) {
-          resetMenu();
+          menuPage = 1;
+          menu = 0;
         } else {
           menuPage = 1;
           menu = 1;
         }
+        delay(DEBOUNCE*2);
         showMenu();
       } else {
         lcd.display();
