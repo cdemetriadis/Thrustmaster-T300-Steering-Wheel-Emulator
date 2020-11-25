@@ -100,7 +100,6 @@ The display is controlled by the three display buttons (MENU, NEXT & SELECT) and
 5. **Hour Chirp** - Yes, it could also beep every hour to keep track of the time you spend on the simuator
 6. **Display Runtime** - Display the time since the steering wheel booted, so you know how long it's been running
 
-
 ### Rotary Encoders
 The Rotary Encoders allow for quick access the **Brake Balance**, **ABS** and **Traction Control** adjustments while driving. Rotary Encoders are cool because you can quickly tweak settings without needing to distract yourself with on screen menus etc.
 
@@ -117,8 +116,6 @@ The Rotary encoders have been mapped as follows:
 :link: Here is the map of [**control bindings**](control-bindings.md) I've applied in Assetto Corsa Competizione.
 
 ---
-
-
 
 ### CAB (Combined Action Buttons)
 This is something I thought about while watching a video where **Nico Rosberg** was explaining how you need to shift the Brake Balance from the front to the rear and back multiple times on a single lap to optimise your driving. You can of course use the Rotary Encoders, but you can't be precise, especially with the force feedback kicking on your wheel.
@@ -139,6 +136,16 @@ Although my first attempt (v1) functioned perfectly it was not as compact as I'd
 :link: Take a look at the [**Final Diagram Layout & Board**](board.md).
 
 ---
+
+### Dependencies
+
+To compile the Arduino Sketch you will need to have these libraries installed:
+
+* **EEPROM.h** - EEPROM library for storing settings
+* **LiquidCrystal_I2C.h** - Liquid Crystal Display I<sup>2</sup>C library
+* **i2cEncoderMiniLib.h** - Rotery Encoder I<sup>2</sup>C library
+* **TimeLib.h** - Time library
+* **DS1307RTC.h** - DS1307 RTC library
 
 ## Debugging and performance
 The first software version had quite a few issues, with latency being the largest. Every now and then a button click would be missed which during a race this meant an misfire on an upshift or a downshift. This made up for some bad performance.
