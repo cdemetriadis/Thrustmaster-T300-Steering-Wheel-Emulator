@@ -18,8 +18,8 @@
 #define       DEBUG_SETUP false                       // Debug Setup information
 #define       DEBUG_KEYS false                        // Debug the button presses
 #define       DEBUG_WHEEL false                       // Debug wheel output
-#define       DEBUG_ROTARY_SWITCHES false             // Debug Rotary Switches
-#define       DEBUG_LATENCY false                     // Debug response
+#define       DEBUG_ROTARY_SWITCHES false             // Debug Rotary Switches: Display the values returned by the Rotary Switches
+#define       DEBUG_LATENCY true                     // Debug response
 #define       Rotary_Switch_T300 true                 // Select the values for the Rotary Switches. 'true:T300', 'false:USB'
 #define       MESSAGE_DURATION 750                    // Duration of the messages on the screen
 #define       DEBOUNCE 80                             // Set this to the lowest value that gives the best result
@@ -269,23 +269,30 @@ void loop() {
   #endif
 
   #if DEBUG_ROTARY_SWITCHES
-    Serial.println("---");
-    Serial.println(analogRead(6));
-    Serial.println(analogRead(7));
-    Serial.println("---");
-    Serial.println();
+    #define MODE_LABEL "CAB Mode: "
+    #define STEPS_LABEL "CAB Steps: "
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print(MODE_LABEL + String(analogRead(6)));
+    lcd.setCursor(0, 1);
+    lcd.print(MODE_LABEL + String(analogRead(7)));
+    delay(MESSAGE_DURATION);
   #endif
   
-  if (digitalRead(ENC_INTERRUPT_PIN) == LOW) {
-    encoderBB.updateStatus();
-    encoderABS.updateStatus();
-    encoderTC.updateStatus();
-  }
-
-  //
-  // Initiate Button Matrix
-  // This functions returns a buttonValue for each button
-  scanButtonMatrix();
+  #if !DEBUG_ROTARY_SWITCHES // Ignore if debugging Rotary Switches
+    // 
+    // Read Rotary Encoders
+    if (digitalRead(ENC_INTERRUPT_PIN) == LOW) {
+      encoderBB.updateStatus();
+      encoderABS.updateStatus();
+      encoderTC.updateStatus();
+    }
+    
+    //
+    // Initiate Button Matrix
+    // This functions returns a buttonValue for each button
+    scanButtonMatrix();
+  #endif
 
   //
   // Set the action based on the buttonValue
@@ -503,8 +510,8 @@ void loop() {
     case 317: // 290 CAB-L Combined Action Button Left
       buzzer();
 
-      triggerCAB = getCABAction();
-      triggerStepsDecrease = getCABSteps(); // triggerStepsDecrease + getCABSteps();
+      triggerCAB = getCABMode();
+      triggerStepsDecrease = getCABSteps();
 
       if (DISPLAY_STATUS && DISPLAY_KEYS) {
         printDisplay(CABActionMap[triggerCAB]+" -"+triggerStepsDecrease, 5);
@@ -518,8 +525,8 @@ void loop() {
     case 342: // 315 CAB-R + Combined Action Button Right
       buzzer();
       
-      triggerCAB = getCABAction();
-      triggerStepsIncrease = getCABSteps(); // triggerStepsIncrease + getCABSteps();
+      triggerCAB = getCABMode();
+      triggerStepsIncrease = getCABSteps();
 
       if (DISPLAY_STATUS && DISPLAY_KEYS) {
         printDisplay(CABActionMap[triggerCAB]+" +"+triggerStepsIncrease, 5);
@@ -690,7 +697,8 @@ void loop() {
     }
     Serial.println();
   #endif
-  
+
+  #if !DEBUG_ROTARY_SWITCHES // Ignore if debugging Rotary Switches
   // Reset Display if nothing is pressed for the MESSAGE_DURATION
   if (menu == 0 && DISPLAY_STATUS && (millis()-lastDisplayTime) > MESSAGE_DURATION) {
     showMenu();
@@ -698,7 +706,8 @@ void loop() {
     encoderIncCount = 0;
     encoderDecCount = 0;
   }
-
+  #endif 
+  
   if (HOUR_CHIRP) {
     if (tm.Minute == 0 && chirp_played == false) {
       buzzerHour();

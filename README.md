@@ -136,9 +136,10 @@ Although my first attempt (v1) functioned perfectly it was not as compact as I'd
 :link: Take a look at the [**Final Diagram Layout & Board**](board.md).
 
 ---
+## Installing & Running
+If you've got everything wired and connected as the diagram shows, you will probably be all set to use the steering wheel.
 
 ### Dependencies
-
 To compile the Arduino Sketch you will need to have these libraries installed:
 
 * **EEPROM.h** - EEPROM library for storing settings
@@ -147,7 +148,15 @@ To compile the Arduino Sketch you will need to have these libraries installed:
 * **TimeLib.h** - Time library
 * **DS1307RTC.h** - DS1307 RTC library
 
-## Debugging and performance
+### Tweaking the Rotary Switch values
+The one thing that ***may need tweaking*** are the Rotary Switch values, given that the values returned are dependent on the voltage supplied. Set the `DEBUG_ROTARY_SWITCHES` to `true` and the LCD will display the current values of both switches. make a note of those numbers and update them in the `t300_functions` Sketch file, under `getCABMode()` & `getCABSteps()` functions.
+
+### Debugging
+I've 
+
+
+
+## Performance
 The first software version had quite a few issues, with latency being the largest. Every now and then a button click would be missed which during a race this meant an misfire on an upshift or a downshift. This made up for some bad performance.
 
 After running tests I discovered that a single loop ran at around 2800ms with an eventual hiccup every second at around 106000ms. It was abvious that something was producing some type of delay. I eventually optimised the code for the Rotary Encoders and the Clock (RTC). 
