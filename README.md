@@ -136,7 +136,7 @@ Although my first attempt (v1) functioned perfectly it was not as compact as I'd
 :link: Take a look at the [**Final Diagram Layout & Board**](board.md).
 
 ---
-## Installing & Running
+## Installing
 If you've got everything wired and connected as the diagram shows, you will probably be all set to use the steering wheel.
 
 ### Dependencies
@@ -148,12 +148,21 @@ To compile the Arduino Sketch you will need to have these libraries installed:
 * **TimeLib.h** - Time library
 * **DS1307RTC.h** - DS1307 RTC library
 
+### Setting the time
+Follow the librarie's instructions on how to setup the current time on the RTC.
+
+### Setup Rotary Encoders
+Follow the librarie's instructions on how to change the address of each of the Rotary Encoder boards. I've set them as follows:
+
+* BB (Brake Balance): 0x20
+* ABS (Antilock Braking System): 0x21
+* TC (Traction Control): 0x22
+
 ### Tweaking the Rotary Switch values
 The one thing that ***may need tweaking*** are the Rotary Switch values, given that the values returned are dependent on the voltage supplied. Set the `DEBUG_ROTARY_SWITCHES` to `true` and the LCD will display the current values of both switches. make a note of those numbers and update them in the `t300_functions` Sketch file, under `getCABMode()` & `getCABSteps()` functions.
 
-### Debugging
-I've 
-
+### Debugging Performance
+I've added a built in performance monitor. You'll need to set `DEBUG_LATENCY` to `true` and open the Serial Monitor (115200 baud). Once uploaded, you will view a real-time report on the current loop latency.
 
 
 ## Performance
@@ -161,7 +170,7 @@ The first software version had quite a few issues, with latency being the larges
 
 After running tests I discovered that a single loop ran at around 2800ms with an eventual hiccup every second at around 106000ms. It was abvious that something was producing some type of delay. I eventually optimised the code for the Rotary Encoders and the Clock (RTC). 
 
-#### The final version of the code running on the Arduino Nano with all the hardware connected has a steady loop latency of about ~2000ms. When the display is turned off the latency drops to 200ms (roughly 0.0002 seconds).
+#### The final version of the code running on the Arduino Nano with all the hardware connected has a steady loop latency of about ~1790ms. When the display is turned off the latency drops to 195ms (roughly 0.000195 seconds).
 
 Since the display does not add much to the driving experience, you can opt to turn it off while driving by long-pressing the ABS Rotary Switch.
 
