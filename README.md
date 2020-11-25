@@ -149,16 +149,16 @@ To compile the Arduino Sketch you will need to have these libraries installed:
 * **DS1307RTC.h** - DS1307 RTC library
 
 ### Setting the time
-Follow the librarie's instructions on how to setup the current time on the RTC.
+Follow the library's instructions on how to setup the current time on the RTC.
 
 ### Setup Rotary Encoders
-Follow the librarie's instructions on how to change the address of each of the Rotary Encoder boards. I've set them as follows:
+Follow the library's instructions on how to change the address of each of the Rotary Encoder boards. I've set them as follows:
 
 * BB (Brake Balance): 0x20
 * ABS (Antilock Braking System): 0x21
 * TC (Traction Control): 0x22
 
-### Tweaking the Rotary Switch values
+### Setup Rotary Switch values
 The one thing that ***may need tweaking*** are the Rotary Switch values, given that the values returned are dependent on the voltage supplied. Set the `DEBUG_ROTARY_SWITCHES` to `true` and the LCD will display the current values of both switches. make a note of those numbers and update them in the `t300_functions` Sketch file, under `getCABMode()` & `getCABSteps()` functions.
 
 ### Debugging Performance
