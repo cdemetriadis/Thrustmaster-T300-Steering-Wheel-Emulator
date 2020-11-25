@@ -23,13 +23,19 @@ Since I do not have immediate access to a 3D printer or a CNC machine, I decided
 
 ![F1 Steering Wheel](assets/F1-wheel-emulator.jpg)
 
+--- 
+
+:tv: Watch a quick [**Video Demonstration**](https://youtu.be/Ty8LVwWxRgA) of the wheel in action.
+
+---
+
 ### Stickers & Labels
 
 The stickers were printed using a standard inkjet on an A4 sticker sheet, and then covered with transparent packing tape. 
 
 ---
 
-:link: Download the [**sticker sheet here** (pdf)](assets/f1-wheel-labels.pdf).
+:page_facing_up: Download the [**sticker sheet here** (pdf)](assets/f1-wheel-labels.pdf).
 
 ---
 
@@ -53,7 +59,7 @@ I needed 22 buttons to perform all of the funcitons I planned. I sourced them fr
 
 ---
 
-:link: Here's the complete [**list of the hardware**](hardware-list.md) I used.
+:nut_and_bolt: Here's the complete [**list of the hardware**](hardware-list.md) I used.
 
 ---
 
@@ -69,7 +75,7 @@ I won't get into too much detail on that code here, but you are welcome to view 
 
 ---
 
-:link: View the [**Arduino Sketch files**](t300_steering_wheel_emulator/t300_steering_wheel_emulator.ino)
+:pager: View the [**Arduino Sketch files**](t300_steering_wheel_emulator/t300_steering_wheel_emulator.ino)
 
 ---
 
@@ -82,7 +88,7 @@ In the name of saving GPIO's on the Nano, I created a 5x5 Button Matrix to suppo
 
 ---
 
-:link: Here's the [**Button Matrix**](button-matrix.md).
+:world_map: Here's the [**Button Matrix**](button-matrix.md).
 
 ---
 
@@ -113,7 +119,7 @@ The Rotary encoders have been mapped as follows:
 
 ---
 
-:link: Here is the map of [**control bindings**](control-bindings.md) I've applied in Assetto Corsa Competizione.
+:video_game: Here is the map of [**control bindings**](control-bindings.md) I've applied in Assetto Corsa Competizione.
 
 ---
 
@@ -133,7 +139,7 @@ Although my first attempt (v1) functioned perfectly it was not as compact as I'd
 
 ---
 
-:link: Take a look at the [**Final Diagram Layout & Board**](board.md).
+:clipboard: Take a look at the [**Final Diagram Layout & Board**](board.md).
 
 ---
 ## Installing
