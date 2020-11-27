@@ -4,7 +4,7 @@ Here are all the wheel control bindings and how they map to each platform. **Xbo
 
 I've also included the mapping in **Assetto Corsa Competizione**. 
 
-![F1 Steering Wheel](assets/F1-wheel-binding.jpg)
+![F1 Steering Wheel](assets/f1-wheel-binding.jpg)
 
 <center>
 
