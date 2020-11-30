@@ -35,7 +35,6 @@ const String  MODE_PS = ":PS";
 const String  MODE_GT = ":GT";
 const String  DISPLAY_KEYPRESS_MENU = "Keypress";
 const String  DISPLAY_STATUS_MENU = "Display Off";
-//const String  DISPLAY_OFF = "Display Off";
 const String  BUZZER_STATUS_MENU = "Buzzer";
 const String  HOUR_CHIRP_MENU = "Hour Chirp";
 const String  DISPLAY_RUNTIME_MENU = "Runtime";
