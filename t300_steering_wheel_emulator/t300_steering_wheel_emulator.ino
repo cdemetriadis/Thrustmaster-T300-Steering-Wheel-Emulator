@@ -15,46 +15,48 @@
 
 //
 // Debugging & Setup 
-const bool    DEBUG_SETUP = false;                       // Debug Setup information
-const bool    DEBUG_KEYS = false;                        // Debug the button presses
-const bool    DEBUG_WHEEL = false;                       // Debug wheel output
-const bool    DEBUG_ROTARY_SWITCHES = false;             // Debug Rotary Switches: Display the values returned by the Rotary Switches
-const bool    DEBUG_LATENCY = false;                     // Debug response
-const bool    Rotary_Switch_T300 = true;                 // Select the values for the Rotary Switches. 'true:T300', 'false:USB'
-const int     MESSAGE_DURATION = 750;                    // Duration of the messages on the screen
-const int     DEBOUNCE = 120;                            // Set this to the lowest value that gives the best result
+const bool    DEBUG_SETUP = false;                    // Debug Setup information
+const bool    DEBUG_KEYS = false;                     // Debug the button presses
+const bool    DEBUG_WHEEL = false;                    // Debug wheel output
+const bool    DEBUG_ROTARY_SWITCHES = false;          // Debug Rotary Switches: Display the values returned by the Rotary Switches
+const bool    DEBUG_LATENCY = false;                  // Debug response
+const bool    Rotary_Switch_T300 = true;              // Select the values for the Rotary Switches. 'true:T300', 'false:USB'
+const int     MESSAGE_DURATION = 750;                 // Duration of the messages on the screen
+const int     DEBOUNCE = 100;                         // Set this to the lowest value that gives the best result
 
 //
 // Display Strings
-const String  MENU = "~Ready";
+const String  ON_ICON = "~";
+const String  OFF_ICON = " ";
+const String  MENU = "Ready";
 const String  LOADING = "Loading...";
-const String  SELECT_OPTION = " Select Option:";
+const String  SELECT_OPTION = "Select Option";
 
-const String  DISPLAY_MODE_ON = "~Mode";
-const String  DISPLAY_MODE_OFF = " Mode";
+const String  DISPLAY_MODE_MENU = "Mode";
+//const String  DISPLAY_MODE_OFF = " Mode";
 const String  MODE_PS = ":PS";
 const String  MODE_WHEEL = ":GT";
 
-const String  DISPLAY_KEYPRESS_ON = "~Keypress";
-const String  DISPLAY_KEYPRESS_OFF = " Keypress";
+const String  DISPLAY_KEYPRESS_MENU = "Keypress";
+//const String  DISPLAY_KEYPRESS_OFF = " Keypress";
 const String  KEYPRESS_ON = ":On";
 const String  KEYPRESS_OFF = ":Off";
 
-const String  DISPLAY_STATUS_ON = "~Display Off";
-const String  DISPLAY_STATUS_OFF = " Display Off";
+const String  DISPLAY_STATUS_MENU = "Display Off";
+//const String  DISPLAY_STATUS_OFF = " Display Off";
 const String  DISPLAY_OFF = "Display: Off";
 
-const String  BUZZER_STATUS_ON = "~Buzzer";
-const String  BUZZER_STATUS_OFF = " Buzzer";
+const String  BUZZER_STATUS_MENU = "Buzzer";
+//const String  BUZZER_STATUS_OFF = " Buzzer";
 const String  BUZZER_ON = ":On";
 const String  BUZZER_OFF = ":Off";
 
-const String  HOUR_CHIRP_ON = "~Hour Chirp";
-const String  HOUR_CHIRP_OFF = " Hour Chirp";
+const String  HOUR_CHIRP_MENU = "Hour Chirp";
+//const String  HOUR_CHIRP_OFF = " Hour Chirp";
 const String  CHIRP_ON = ":On";
 const String  CHIRP_OFF = ":Off";
 
-const String  DISPLAY_RUNTIME_ON = "~Display Runtime";
+const String  DISPLAY_RUNTIME_MENU = "Runtime";
 
 
 //

@@ -75,33 +75,33 @@ void showMenu() {
     maxPages = 6;
     switch (menuPage) {
       case 1:
-        printDisplay(SELECT_OPTION, 0,
-                     DISPLAY_MODE_ON + ((DISPLAY_MODE) ? MODE_PS : MODE_WHEEL), 0);
+        printDisplay(OFF_ICON+SELECT_OPTION, 0,
+                     ON_ICON+DISPLAY_MODE_MENU + ((DISPLAY_MODE) ? MODE_PS : MODE_WHEEL), 0);
         break;
       case 2:
-        printDisplay(DISPLAY_MODE_OFF + ((DISPLAY_MODE) ? MODE_PS : MODE_WHEEL), 0,
-                     DISPLAY_KEYPRESS_ON + ((DISPLAY_KEYS) ? KEYPRESS_ON : KEYPRESS_OFF), 0);
+        printDisplay(OFF_ICON+DISPLAY_MODE_MENU + ((DISPLAY_MODE) ? MODE_PS : MODE_WHEEL), 0,
+                     ON_ICON+DISPLAY_KEYPRESS_MENU + ((DISPLAY_KEYS) ? KEYPRESS_ON : KEYPRESS_OFF), 0);
         break;
       case 3:
-        printDisplay(DISPLAY_KEYPRESS_OFF + ((DISPLAY_KEYS) ? KEYPRESS_ON : KEYPRESS_OFF), 0,
-                     BUZZER_STATUS_ON + ((BUZZER_STATUS) ? BUZZER_ON : BUZZER_OFF), 0);
+        printDisplay(OFF_ICON+DISPLAY_KEYPRESS_MENU + ((DISPLAY_KEYS) ? KEYPRESS_ON : KEYPRESS_OFF), 0,
+                     ON_ICON+BUZZER_STATUS_MENU + ((BUZZER_STATUS) ? BUZZER_ON : BUZZER_OFF), 0);
         break;
       case 4:
-        printDisplay(BUZZER_STATUS_OFF + ((BUZZER_STATUS) ? BUZZER_ON : BUZZER_OFF), 0, 
-                     HOUR_CHIRP_ON + ((HOUR_CHIRP) ? CHIRP_ON : CHIRP_OFF), 0);
+        printDisplay(OFF_ICON+BUZZER_STATUS_MENU + ((BUZZER_STATUS) ? BUZZER_ON : BUZZER_OFF), 0, 
+                     ON_ICON+HOUR_CHIRP_MENU + ((HOUR_CHIRP) ? CHIRP_ON : CHIRP_OFF), 0);
         break;
       case 5:
-        printDisplay(HOUR_CHIRP_OFF + ((HOUR_CHIRP) ? CHIRP_ON : CHIRP_OFF), 0, 
-                     DISPLAY_STATUS_ON, 0);
+        printDisplay(OFF_ICON+HOUR_CHIRP_MENU + ((HOUR_CHIRP) ? CHIRP_ON : CHIRP_OFF), 0, 
+                     ON_ICON+DISPLAY_STATUS_MENU, 0);
         break;
       case 6:
-        printDisplay(DISPLAY_STATUS_OFF, 0, 
-                     DISPLAY_RUNTIME_ON, 0);
+        printDisplay(OFF_ICON+DISPLAY_STATUS_MENU, 0, 
+                     ON_ICON+DISPLAY_RUNTIME_MENU, 0);
         break;
     }
   } else {
     getDateTime();
-    printDisplay(getDate + "      " + getTime, 0, MENU, 0);
+    printDisplay(getDate + "      " + getTime, 0, ON_ICON+MENU, 0);
   }
 };
 
