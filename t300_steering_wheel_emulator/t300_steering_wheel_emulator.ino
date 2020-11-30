@@ -31,32 +31,17 @@ const String  OFF_ICON = " ";
 const String  MENU = "Ready";
 const String  LOADING = "Loading...";
 const String  SELECT_OPTION = "Select Option";
-
 const String  DISPLAY_MODE_MENU = "Mode";
-//const String  DISPLAY_MODE_OFF = " Mode";
 const String  MODE_PS = ":PS";
 const String  MODE_WHEEL = ":GT";
-
 const String  DISPLAY_KEYPRESS_MENU = "Keypress";
-//const String  DISPLAY_KEYPRESS_OFF = " Keypress";
-const String  KEYPRESS_ON = ":On";
-const String  KEYPRESS_OFF = ":Off";
-
 const String  DISPLAY_STATUS_MENU = "Display Off";
-//const String  DISPLAY_STATUS_OFF = " Display Off";
-const String  DISPLAY_OFF = "Display: Off";
-
+//const String  DISPLAY_OFF = "Display Off";
 const String  BUZZER_STATUS_MENU = "Buzzer";
-//const String  BUZZER_STATUS_OFF = " Buzzer";
-const String  BUZZER_ON = ":On";
-const String  BUZZER_OFF = ":Off";
-
 const String  HOUR_CHIRP_MENU = "Hour Chirp";
-//const String  HOUR_CHIRP_OFF = " Hour Chirp";
-const String  CHIRP_ON = ":On";
-const String  CHIRP_OFF = ":Off";
-
 const String  DISPLAY_RUNTIME_MENU = "Runtime";
+const String  ON = ":On";
+const String  OFF = ":Off";
 
 
 //

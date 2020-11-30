@@ -80,18 +80,18 @@ void showMenu() {
         break;
       case 2:
         printDisplay(OFF_ICON+DISPLAY_MODE_MENU + ((DISPLAY_MODE) ? MODE_PS : MODE_WHEEL), 0,
-                     ON_ICON+DISPLAY_KEYPRESS_MENU + ((DISPLAY_KEYS) ? KEYPRESS_ON : KEYPRESS_OFF), 0);
+                     ON_ICON+DISPLAY_KEYPRESS_MENU + ((DISPLAY_KEYS) ? ON : OFF), 0);
         break;
       case 3:
-        printDisplay(OFF_ICON+DISPLAY_KEYPRESS_MENU + ((DISPLAY_KEYS) ? KEYPRESS_ON : KEYPRESS_OFF), 0,
-                     ON_ICON+BUZZER_STATUS_MENU + ((BUZZER_STATUS) ? BUZZER_ON : BUZZER_OFF), 0);
+        printDisplay(OFF_ICON+DISPLAY_KEYPRESS_MENU + ((DISPLAY_KEYS) ? ON : OFF), 0,
+                     ON_ICON+BUZZER_STATUS_MENU + ((BUZZER_STATUS) ? ON : OFF), 0);
         break;
       case 4:
-        printDisplay(OFF_ICON+BUZZER_STATUS_MENU + ((BUZZER_STATUS) ? BUZZER_ON : BUZZER_OFF), 0, 
-                     ON_ICON+HOUR_CHIRP_MENU + ((HOUR_CHIRP) ? CHIRP_ON : CHIRP_OFF), 0);
+        printDisplay(OFF_ICON+BUZZER_STATUS_MENU + ((BUZZER_STATUS) ? ON : OFF), 0, 
+                     ON_ICON+HOUR_CHIRP_MENU + ((HOUR_CHIRP) ? ON : OFF), 0);
         break;
       case 5:
-        printDisplay(OFF_ICON+HOUR_CHIRP_MENU + ((HOUR_CHIRP) ? CHIRP_ON : CHIRP_OFF), 0, 
+        printDisplay(OFF_ICON+HOUR_CHIRP_MENU + ((HOUR_CHIRP) ? ON : OFF), 0, 
                      ON_ICON+DISPLAY_STATUS_MENU, 0);
         break;
       case 6:
@@ -163,20 +163,6 @@ void toggleDisplayKeypress() {
 }
 
 //
-// Turn the Display off 
-void turnDisplayOff() {
-  printDisplay(DISPLAY_OFF, 2);
-  delay(MESSAGE_DURATION);
-  lcd.noDisplay();
-  lcd.noBacklight();
-  lcd.clear();
-  DISPLAY_STATUS = 0;
-  EEPROM.write(3, DISPLAY_STATUS);
-  menuPage = 1;
-  menu = 0;
-}
-
-//
 // Toggle the buzzzer
 void toggleBuzzerStatus() {
   if (BUZZER_STATUS == 1) {
@@ -201,6 +187,20 @@ void toggleHourChirp() {
   EEPROM.write(4, HOUR_CHIRP);
   delay(DEBOUNCE);
   showMenu();
+}
+
+//
+// Turn the Display off 
+void turnDisplayOff() {
+  printDisplay(DISPLAY_STATUS_MENU, 2);
+  delay(MESSAGE_DURATION);
+  lcd.noDisplay();
+  lcd.noBacklight();
+  lcd.clear();
+  DISPLAY_STATUS = 0;
+  EEPROM.write(3, DISPLAY_STATUS);
+  menuPage = 1;
+  menu = 0;
 }
 
 //
