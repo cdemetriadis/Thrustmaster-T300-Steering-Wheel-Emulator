@@ -27,13 +27,12 @@
 //
 // Display Strings
 const String  ON_ICON = "~";
-const String  OFF_ICON = " ";
-const String  MENU = "Ready";
+const String  MENU = "~Ready";
 const String  LOADING = "Loading...";
 const String  SELECT_OPTION = "Select Option";
 const String  DISPLAY_MODE_MENU = "Mode";
 const String  MODE_PS = ":PS";
-const String  MODE_WHEEL = ":GT";
+const String  MODE_GT = ":GT";
 const String  DISPLAY_KEYPRESS_MENU = "Keypress";
 const String  DISPLAY_STATUS_MENU = "Display Off";
 //const String  DISPLAY_OFF = "Display Off";

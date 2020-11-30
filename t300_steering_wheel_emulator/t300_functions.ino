@@ -75,33 +75,33 @@ void showMenu() {
     maxPages = 6;
     switch (menuPage) {
       case 1:
-        printDisplay(OFF_ICON+SELECT_OPTION, 0,
-                     ON_ICON+DISPLAY_MODE_MENU + ((DISPLAY_MODE) ? MODE_PS : MODE_WHEEL), 0);
+        printDisplay(SELECT_OPTION, 1,
+                     ON_ICON+DISPLAY_MODE_MENU + ((DISPLAY_MODE) ? MODE_PS : MODE_GT), 0);
         break;
       case 2:
-        printDisplay(OFF_ICON+DISPLAY_MODE_MENU + ((DISPLAY_MODE) ? MODE_PS : MODE_WHEEL), 0,
+        printDisplay(DISPLAY_MODE_MENU + ((DISPLAY_MODE) ? MODE_PS : MODE_GT), 1,
                      ON_ICON+DISPLAY_KEYPRESS_MENU + ((DISPLAY_KEYS) ? ON : OFF), 0);
         break;
       case 3:
-        printDisplay(OFF_ICON+DISPLAY_KEYPRESS_MENU + ((DISPLAY_KEYS) ? ON : OFF), 0,
+        printDisplay(DISPLAY_KEYPRESS_MENU + ((DISPLAY_KEYS) ? ON : OFF), 1,
                      ON_ICON+BUZZER_STATUS_MENU + ((BUZZER_STATUS) ? ON : OFF), 0);
         break;
       case 4:
-        printDisplay(OFF_ICON+BUZZER_STATUS_MENU + ((BUZZER_STATUS) ? ON : OFF), 0, 
+        printDisplay(BUZZER_STATUS_MENU + ((BUZZER_STATUS) ? ON : OFF), 1, 
                      ON_ICON+HOUR_CHIRP_MENU + ((HOUR_CHIRP) ? ON : OFF), 0);
         break;
       case 5:
-        printDisplay(OFF_ICON+HOUR_CHIRP_MENU + ((HOUR_CHIRP) ? ON : OFF), 0, 
+        printDisplay(HOUR_CHIRP_MENU + ((HOUR_CHIRP) ? ON : OFF), 1, 
                      ON_ICON+DISPLAY_STATUS_MENU, 0);
         break;
       case 6:
-        printDisplay(OFF_ICON+DISPLAY_STATUS_MENU, 0, 
+        printDisplay(DISPLAY_STATUS_MENU, 1, 
                      ON_ICON+DISPLAY_RUNTIME_MENU, 0);
         break;
     }
   } else {
     getDateTime();
-    printDisplay(getDate + "      " + getTime, 0, ON_ICON+MENU, 0);
+    printDisplay(getDate + "      " + getTime, 0, MENU, 0);
   }
 };
 
