@@ -146,10 +146,24 @@ void setup() {
   SPCR |= _BV(SPE);      // Enables the SPI when 1
   SPCR |= _BV(SPIE);     // Enables the SPI interrupt when 1
 
+  /* We use pin 10 (SS) to identify when SPI transfer starts (wheelbase sets it to LOW)
+   * and when it ends (wheelbase sets it to HIGH and we reset pos counter + prepare SPDR for next transfer)
+   * Here we enable external interrupt on pin 10 - via Pin Change Interrupt.
+   *
+   * https://www.teachmemicro.com/arduino-interrupt-tutorial/
+   * Pin Change Interrupt services
+   * PCICR = x x x x x PCIE2 PCIE1 PCIE0 - enable PCINT group. PCIE0 = PORTB pins group (PCINT0-PCINT7 = PB0-PB7 = pins 8-13 + XTAL), PCIE1 = PORTC group, PCIE2 = PORTD group.
+   * 
+   * PCMSK0 = PCINT7 PCINT6 PCINT5 PCINT4 PCINT3 PCINT2 PCINT1 PCINT0 - those are PORTB PB0-PB7 (digital pins 8 - 13, XTAL1, XTAL2)
+   * PCMSK1 = x PCINT14 PCINT13 PCINT12 PCINT11 PCINT10 PCINT9 PCINT8 - those are PORTC PC0-PC6 (A0-A5, Reset)
+   * PCMSK2 = PCINT23 PCINT22 PCINT21 PCINT20 PCINT19 PCINT18 PCINT17 PCINT16 - those are PORTD PD0-PD7 (digital pins 0 - 7) */
+  PCMSK0 = B00000100;    // Only react to PCINT2 = PB2 = D10 (SS pin) (when signal on this pin changes 0->1 OR 1->0 - interrupt happens)
+  PCIFR = B00000000;     // clear all interrupt flags
+  PCICR = B00000001;     // Enable PCIE0 = PORTB group (PCINT0 - PCINT7 = digital pins 8-13)
+
+  sei();                 // enable global interrupts
+
   pinMode(BUZZER_PIN, OUTPUT); // Set buzzer pin as OUTPUT
-  
-  // Interrupt for SS rising edge
-  attachInterrupt (digitalPinToInterrupt(MATRIX_INTERRUPT_PIN), ss_rising, RISING); // Interrupt for Button Matrix
   
   // Setup Encoders
   pinMode(ENC_INTERRUPT_PIN, INPUT);
@@ -228,10 +242,12 @@ void setup() {
 }
 
 
-// Interrupt0 (external, pin 2) - prepare to start the transfer
-void ss_rising () {
-  SPDR = wheelState[0]; // load first byte into SPI data register
-  pos = 1;
+// External interrupt handler for whole PCIE0 group. Prepare for next SPI communication
+ISR (PCINT0_vect) {
+  if (PINB2) { // PINB2 = D10 = PORTB bit 2. Captures the moment, when SS line becomes 0->1 (end of SPI transfer)
+    SPDR = wheelState[0]; // load first byte into SPI data register
+    pos = 1;
+  }
 }
 
 
