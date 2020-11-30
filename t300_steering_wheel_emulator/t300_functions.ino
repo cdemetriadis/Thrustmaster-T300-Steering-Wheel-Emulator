@@ -75,22 +75,28 @@ void showMenu() {
     maxPages = 6;
     switch (menuPage) {
       case 1:
-        printDisplay(SELECT_OPTION, 0, DISPLAY_MODE_ON, 0);
+        printDisplay(SELECT_OPTION, 0,
+                     DISPLAY_MODE_ON + ((DISPLAY_MODE) ? MODE_PS : MODE_WHEEL), 0);
         break;
       case 2:
-        printDisplay(DISPLAY_MODE_OFF, 0, DISPLAY_KEYPRESS_ON, 0);
+        printDisplay(DISPLAY_MODE_OFF + ((DISPLAY_MODE) ? MODE_PS : MODE_WHEEL), 0,
+                     DISPLAY_KEYPRESS_ON + ((DISPLAY_KEYS) ? KEYPRESS_ON : KEYPRESS_OFF), 0);
         break;
       case 3:
-        printDisplay(DISPLAY_KEYPRESS_OFF, 0, DISPLAY_STATUS_ON, 0);
+        printDisplay(DISPLAY_KEYPRESS_OFF + ((DISPLAY_KEYS) ? KEYPRESS_ON : KEYPRESS_OFF), 0,
+                     BUZZER_STATUS_ON + ((BUZZER_STATUS) ? BUZZER_ON : BUZZER_OFF), 0);
         break;
       case 4:
-        printDisplay(DISPLAY_STATUS_OFF, 0, BUZZER_STATUS_ON, 0);
+        printDisplay(BUZZER_STATUS_OFF + ((BUZZER_STATUS) ? BUZZER_ON : BUZZER_OFF), 0, 
+                     HOUR_CHIRP_ON + ((HOUR_CHIRP) ? CHIRP_ON : CHIRP_OFF), 0);
         break;
       case 5:
-        printDisplay(BUZZER_STATUS_OFF, 0, HOUR_CHIRP_ON, 0);
+        printDisplay(HOUR_CHIRP_OFF + ((HOUR_CHIRP) ? CHIRP_ON : CHIRP_OFF), 0, 
+                     DISPLAY_STATUS_ON, 0);
         break;
       case 6:
-        printDisplay(HOUR_CHIRP_OFF, 0, DISPLAY_RUNTIME_ON, 0);
+        printDisplay(DISPLAY_STATUS_OFF, 0, 
+                     DISPLAY_RUNTIME_ON, 0);
         break;
     }
   } else {
@@ -116,14 +122,14 @@ void displaySelect() {
   if (menu == 1 && menuPage == 2) { // Display Keypress
     toggleDisplayKeypress();
   }
-  if (menu == 1 && menuPage == 3) { // Display Off
-    turnDisplayOff();
-  }
-  if (menu == 1 && menuPage == 4) { // Buzzer Status
+  if (menu == 1 && menuPage == 3) { // Buzzer Status
     toggleBuzzerStatus();
   }
-  if (menu == 1 && menuPage == 5) { // Hour Chirp
+  if (menu == 1 && menuPage == 4) { // Hour Chirp
     toggleHourChirp();
+  }
+  if (menu == 1 && menuPage == 5) { // Display Off
+    turnDisplayOff();
   }
   if (menu == 1 && menuPage == 6) { // Display Runtime
     displayRuntime();
@@ -135,13 +141,11 @@ void displaySelect() {
 void toggleDisplayMode() {
   if (DISPLAY_MODE == 1) {
     DISPLAY_MODE = 0;
-    printDisplay(MODE_WHEEL, 2);
   } else {
     DISPLAY_MODE = 1;
-    printDisplay(MODE_PS, 4);
   }
   EEPROM.write(0, DISPLAY_MODE);
-  delay(MESSAGE_DURATION);
+  delay(DEBOUNCE);
   showMenu();
 }
 
@@ -150,20 +154,18 @@ void toggleDisplayMode() {
 void toggleDisplayKeypress() {
   if (DISPLAY_KEYS == 1) {
     DISPLAY_KEYS = 0;
-    printDisplay(KEYPRESS_OFF, 1);
   } else {
     DISPLAY_KEYS = 1;
-    printDisplay(KEYPRESS_ON, 2);
   }
   EEPROM.write(1, DISPLAY_KEYS);
-  delay(MESSAGE_DURATION);
+  delay(DEBOUNCE);
   showMenu();
 }
 
 //
 // Turn the Display off 
 void turnDisplayOff() {
-  printDisplay(DISPLAY_STATUS_OFF, 2);
+  printDisplay(DISPLAY_OFF, 2);
   delay(MESSAGE_DURATION);
   lcd.noDisplay();
   lcd.noBacklight();
@@ -179,14 +181,12 @@ void turnDisplayOff() {
 void toggleBuzzerStatus() {
   if (BUZZER_STATUS == 1) {
     BUZZER_STATUS = 0;
-    printDisplay(BUZZER_OFF, 2);
   } else {
     BUZZER_STATUS = 1;
-    printDisplay(BUZZER_ON, 3);
     buzzer();
   }
   EEPROM.write(2, BUZZER_STATUS);
-  delay(MESSAGE_DURATION);
+  delay(DEBOUNCE);
   showMenu();
 }
 
@@ -195,13 +195,11 @@ void toggleBuzzerStatus() {
 void toggleHourChirp() {
   if (HOUR_CHIRP == 1) {
     HOUR_CHIRP = 0;
-    printDisplay(CHIRP_OFF);
   } else {
     HOUR_CHIRP = 1;
-    printDisplay(CHIRP_ON);
   }
   EEPROM.write(4, HOUR_CHIRP);
-  delay(MESSAGE_DURATION);
+  delay(DEBOUNCE);
   showMenu();
 }
 

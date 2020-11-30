@@ -15,39 +15,47 @@
 
 //
 // Debugging & Setup 
-#define       DEBUG_SETUP false                       // Debug Setup information
-#define       DEBUG_KEYS false                        // Debug the button presses
-#define       DEBUG_WHEEL false                       // Debug wheel output
-#define       DEBUG_ROTARY_SWITCHES false             // Debug Rotary Switches: Display the values returned by the Rotary Switches
-#define       DEBUG_LATENCY false                     // Debug response
-#define       Rotary_Switch_T300 true                 // Select the values for the Rotary Switches. 'true:T300', 'false:USB'
-#define       MESSAGE_DURATION 750                    // Duration of the messages on the screen
-#define       DEBOUNCE 120                            // Set this to the lowest value that gives the best result
+const bool    DEBUG_SETUP = false;                       // Debug Setup information
+const bool    DEBUG_KEYS = false;                        // Debug the button presses
+const bool    DEBUG_WHEEL = false;                       // Debug wheel output
+const bool    DEBUG_ROTARY_SWITCHES = false;             // Debug Rotary Switches: Display the values returned by the Rotary Switches
+const bool    DEBUG_LATENCY = false;                     // Debug response
+const bool    Rotary_Switch_T300 = true;                 // Select the values for the Rotary Switches. 'true:T300', 'false:USB'
+const int     MESSAGE_DURATION = 750;                    // Duration of the messages on the screen
+const int     DEBOUNCE = 120;                            // Set this to the lowest value that gives the best result
 
 //
 // Display Strings
-#define       MENU "~Ready"
-#define       LOADING "Loading..."
-#define       SELECT_OPTION " Select Option:"
-#define       DISPLAY_MODE_ON "~Display Mode"
-#define       DISPLAY_MODE_OFF " Display Mode"
-#define       DISPLAY_KEYPRESS_ON "~Disp.Keypress"
-#define       DISPLAY_KEYPRESS_OFF " Disp.Keypress"
-#define       DISPLAY_STATUS_ON "~Display Off"
-#define       DISPLAY_STATUS_OFF " Display Off"
-#define       BUZZER_STATUS_ON "~Buzzer"
-#define       BUZZER_STATUS_OFF " Buzzer"
-#define       HOUR_CHIRP_ON "~Hour Chirp"
-#define       HOUR_CHIRP_OFF " Hour Chirp"
-#define       DISPLAY_RUNTIME_ON "~Display Runtime"
-#define       KEYPRESS_ON "Keypress: On"
-#define       KEYPRESS_OFF "Keypress: Off"
-#define       MODE_PS "Mode: PS"
-#define       MODE_WHEEL "Mode: Wheel"
-#define       CHIRP_ON "Hour Chirp: On"
-#define       CHIRP_OFF "Hour Chirp: Off"
-#define       BUZZER_ON "Buzzer: On"
-#define       BUZZER_OFF "Buzzer: Off"
+const String  MENU = "~Ready";
+const String  LOADING = "Loading...";
+const String  SELECT_OPTION = " Select Option:";
+
+const String  DISPLAY_MODE_ON = "~Mode";
+const String  DISPLAY_MODE_OFF = " Mode";
+const String  MODE_PS = ":PS";
+const String  MODE_WHEEL = ":GT";
+
+const String  DISPLAY_KEYPRESS_ON = "~Keypress";
+const String  DISPLAY_KEYPRESS_OFF = " Keypress";
+const String  KEYPRESS_ON = ":On";
+const String  KEYPRESS_OFF = ":Off";
+
+const String  DISPLAY_STATUS_ON = "~Display Off";
+const String  DISPLAY_STATUS_OFF = " Display Off";
+const String  DISPLAY_OFF = "Display: Off";
+
+const String  BUZZER_STATUS_ON = "~Buzzer";
+const String  BUZZER_STATUS_OFF = " Buzzer";
+const String  BUZZER_ON = ":On";
+const String  BUZZER_OFF = ":Off";
+
+const String  HOUR_CHIRP_ON = "~Hour Chirp";
+const String  HOUR_CHIRP_OFF = " Hour Chirp";
+const String  CHIRP_ON = ":On";
+const String  CHIRP_OFF = ":Off";
+
+const String  DISPLAY_RUNTIME_ON = "~Display Runtime";
+
 
 //
 // Setup EEPROM for saving various states
@@ -64,7 +72,7 @@ unsigned long startLoop;
 i2cEncoderMiniLib encoderBB(0x20);
 i2cEncoderMiniLib encoderABS(0x21);
 i2cEncoderMiniLib encoderTC(0x22);
-#define       ENC_INTERRUPT_PIN 3
+const int     ENC_INTERRUPT_PIN = 3;
 int           encoderIncCount = 0;
 int           encoderDecCount = 0;
 
@@ -89,7 +97,7 @@ bool          chirp_played = true;
 
 //
 // Setup Buzzer 
-#define       BUZZER_PIN 4
+const int     BUZZER_PIN = 4;
 unsigned long buzzerTime;
 
 //
@@ -110,7 +118,7 @@ unsigned long cabTrigger;
 
 //
 // Button Matrix
-#define       MATRIX_INTERRUPT_PIN 2
+const int     MATRIX_INTERRUPT_PIN = 2;
 int           foundColumn = 0;
 int           buttonValue = 0;
 byte          wheelState[8];
