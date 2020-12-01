@@ -8,7 +8,27 @@ The below is a representation of the final board design. Don't forget to visit [
 3. The Arduino Nano was also placed on female pin connectors
 
 ## Board Diagram
-![F1 Steering Wheel Board](assets/f1-wheel-board.jpg)
+![F1 Steering Wheel Board](assets/f1-wheel-board.jpg) 
+
+## Rotary Switches
+
+![Rotary Switches](assets/f1-wheel-rotary-switches.jpg)
+
+## I2C Serial Bus
+
+![I2C Serial Bus](assets/f1-wheel-i2c.jpg)
+
+## Shifters
+
+![Shifters](assets/f1-wheel-shifters.jpg)
+
+## Extras
+
+![Etxras](assets/f1-wheel-extras.jpg) 
+
+## Button Matrix
+
+![Button Matrix](assets/f1-wheel-button-matrix.jpg)
 
 ## Final Board (v1 & v2)
 Both of these boards worked perfectly fine, but the v2 had a much slimmer profile which made it easier to fit in the enclosure. The RTC is not pictured on v2 as I had not yet (at the time) decided to hardwire it onto the board.

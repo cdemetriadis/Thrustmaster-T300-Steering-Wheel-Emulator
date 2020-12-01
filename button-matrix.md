@@ -10,3 +10,8 @@ I've used a [Cantor Pairing Function](https://en.wikipedia.org/wiki/Pairing_func
 | **2**    | **D7**   | 245 Menu     | 268 Options | 292 Left    | 317 CAB-    | 182 L3  |
 | **3**    | **D8**   | 267 Next     | 291 PS      | 316 Right   | 342 CAB+    | 201 R3  |
 | **4**    | **D9**   | 290 Select   | 315 Share   | 341 -       | 386 -       | 221 -   | 
+
+
+
+## Button Matrix Diagram
+![Button Matrix](assets/f1-wheel-button-matrix.jpg)
