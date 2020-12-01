@@ -22,32 +22,24 @@
 #define       DEBUG_LATENCY false                     // Debug response
 #define       Rotary_Switch_T300 true                 // Select the values for the Rotary Switches. 'true:T300', 'false:USB'
 #define       MESSAGE_DURATION 750                    // Duration of the messages on the screen
-#define       DEBOUNCE 120                            // Set this to the lowest value that gives the best result
+#define       DEBOUNCE 100                            // Set this to the lowest value that gives the best result
 
 //
 // Display Strings
-#define       MENU "~Ready"
-#define       LOADING "Loading..."
-#define       SELECT_OPTION " Select Option:"
-#define       DISPLAY_MODE_ON "~Display Mode"
-#define       DISPLAY_MODE_OFF " Display Mode"
-#define       DISPLAY_KEYPRESS_ON "~Disp.Keypress"
-#define       DISPLAY_KEYPRESS_OFF " Disp.Keypress"
-#define       DISPLAY_STATUS_ON "~Display Off"
-#define       DISPLAY_STATUS_OFF " Display Off"
-#define       BUZZER_STATUS_ON "~Buzzer"
-#define       BUZZER_STATUS_OFF " Buzzer"
-#define       HOUR_CHIRP_ON "~Hour Chirp"
-#define       HOUR_CHIRP_OFF " Hour Chirp"
-#define       DISPLAY_RUNTIME_ON "~Display Runtime"
-#define       KEYPRESS_ON "Keypress: On"
-#define       KEYPRESS_OFF "Keypress: Off"
-#define       MODE_PS "Mode: PS"
-#define       MODE_WHEEL "Mode: Wheel"
-#define       CHIRP_ON "Hour Chirp: On"
-#define       CHIRP_OFF "Hour Chirp: Off"
-#define       BUZZER_ON "Buzzer: On"
-#define       BUZZER_OFF "Buzzer: Off"
+const String  ON_ICON = "~";
+const String  MENU = "~Ready";
+const String  LOADING = "Loading...";
+const String  SELECT_OPTION = "Select Option";
+const String  DISPLAY_MODE_MENU = "Mode";
+const String  MODE_PS = ":PS";
+const String  MODE_GT = ":GT";
+const String  DISPLAY_KEYPRESS_MENU = "Keypress";
+const String  DISPLAY_STATUS_MENU = "Display Off";
+const String  BUZZER_STATUS_MENU = "Buzzer";
+const String  HOUR_CHIRP_MENU = "Hour Chirp";
+const String  DISPLAY_RUNTIME_MENU = "Runtime";
+const String  ON = ":On";
+const String  OFF = ":Off";
 
 //
 // Setup EEPROM for saving various states
@@ -64,7 +56,7 @@ unsigned long startLoop;
 i2cEncoderMiniLib encoderBB(0x20);
 i2cEncoderMiniLib encoderABS(0x21);
 i2cEncoderMiniLib encoderTC(0x22);
-#define       ENC_INTERRUPT_PIN 3
+const int     ENC_INTERRUPT_PIN = 3;
 int           encoderIncCount = 0;
 int           encoderDecCount = 0;
 
@@ -89,7 +81,7 @@ bool          chirp_played = true;
 
 //
 // Setup Buzzer 
-#define       BUZZER_PIN 4
+const int     BUZZER_PIN = 4;
 unsigned long buzzerTime;
 
 //
@@ -110,7 +102,7 @@ unsigned long cabTrigger;
 
 //
 // Button Matrix
-#define       MATRIX_INTERRUPT_PIN 2
+const int     MATRIX_INTERRUPT_PIN = 2;
 int           foundColumn = 0;
 int           buttonValue = 0;
 byte          wheelState[8];
@@ -123,16 +115,6 @@ int           colPin[] = {A0, A1, A2, A3, 11};              // Set pins for colu
 int           rowSize = sizeof(rowPin)/sizeof(rowPin[0]);
 int           colSize = sizeof(colPin)/sizeof(colPin[0]);
 
-//
-// Button Matrix
-//      Cols  |  0              1               2               3               4
-// Rows Pins  |  14/A0          15/A1           16/A2           17/A3           11
-// ---------------------------------------------------------------------------------------------
-// 0    5     |  204 Triangle   225 Circle      247 Up          270 L2          147 L1
-// 1    6     |  224 Square     246 Cross       269 Down        293 R2          164 R1
-// 2    7     |  245 Menu       268 Options     292 left        317 CAB-        182 L3
-// 3    8     |  267 Next       291 PS          316 Right       342 CAB+        201 R3
-// 4    9     |  290 Select     315 Share       341             368             221
 
 void setup() {
   
@@ -184,7 +166,7 @@ void setup() {
 
 
   #if DEBUG_SETUP
-    Serial.println("Thrustmaster Wheel Emulator v1.0");
+    Serial.println("Steering Wheel Emulator");
     Serial.println();
     Serial.print("Setup ");
     Serial.print(rowSize);

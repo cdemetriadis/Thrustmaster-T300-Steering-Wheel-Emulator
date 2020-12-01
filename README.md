@@ -97,14 +97,14 @@ There were a few reasons I wanted a display. **First,** I needed a way to change
 
 The display is controlled by the three display buttons (MENU, NEXT & SELECT) and has the following options:
 
-1. **Display Mode:** Set the mode of the display when Display Keypress is on. Every time you press a button it displays its' function:
-	* **Mode: PS** - Pressing any button displays the Playstation button function (Cross, Triangle, L2, R2, ... etc)
-	* **Mode: Wheel** - Pressing any button displays the simulator button mapping according to my personal preferences (Pit Limiter, HUD, Wipers, ... etc)
-2. **Display Keypress:** Show the button keypress on the display
-3. **Display Off** - Turn the display off (any display button turns it back on a again)
-4. **Buzzer** - Turn the buzzer on or off
-5. **Hour Chirp** - Yes, it could also beep every hour to keep track of the time you spend on the simuator
-6. **Display Runtime** - Display the time since the steering wheel booted, so you know how long it's been running
+1. **Mode:** Set the mode of the display when Display Keypress is on. Every time you press a button it displays its' function:
+	* **PS** - Pressing any button displays the Playstation button function (Cross, Triangle, L2, R2, ... etc)
+	* **GT** - Pressing any button displays the simulator button mapping according to my personal preferences (Pit Limiter, HUD, Wipers, ... etc)
+1. **Keypress:** Show the button keypress on the display
+1. **Buzzer** - Turn the buzzer on or off
+1. **Hour Chirp** - Yes, it could also beep every hour to keep track of the time you spend on the simuator
+1. **Display Off** - Turn the display off (any display button turns it back on a again)
+1. **Runtime** - Display the time since the steering wheel booted, so you know how long it's been running
 
 ### Rotary Encoders
 The Rotary Encoders allow for quick access the **Brake Balance**, **ABS** and **Traction Control** adjustments while driving. Rotary Encoders are cool because you can quickly tweak settings without needing to distract yourself with on screen menus etc.
