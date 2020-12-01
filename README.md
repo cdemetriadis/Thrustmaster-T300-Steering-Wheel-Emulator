@@ -4,7 +4,7 @@ This project started when I decided to update my steering wheel so that it would
 
 #### This build is intended for use with a Thrustmaster T300 Base (direct plugin), Playstation 4 Pro and Assetto Corsa Competizione. 
 
-But, having said that, it should work with **any compatible Thrustmaster Base and Console**, since it's emulating the F1 Steering Wheel (Adnvaced for PC mode not suppoorted/tested yet).
+But, having said that, it should work with **any compatible Thrustmaster Base and Console**, since it's emulating the F1 Steering Wheel (Advanced Mode for PC not supported yet).
 
 ## The Build
 
