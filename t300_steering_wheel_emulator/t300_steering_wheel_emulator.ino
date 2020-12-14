@@ -1,11 +1,21 @@
-// Connect to Thrustmaster T300
-// You'll need to connect the following pins to the Thrustmaster Mini-din connector
 //
-// Arduino GND                        -> T300 Blue wire (2)
-// Arduino pin 12                     -> T300 White wire (3) (data from wheel to base)
-// Arduino pin 10 + pin 2 (SS)        -> T300 Orange wire pin (4) (yes, on Arduino it's wired to two pins. 10 - SS, 2 - INT0)
-// Arduino pin 13 (SCK)               -> T300 Red wire (5)
-// Arduino +5V                        -> T300 Black wire (6) (it gives 3.3V, but must be connected into +5V socket on arduino uno side)
+// Thrustmaster T300 Steering Wheel Emulator
+//
+// Arduino Nano based emulator for an advanced Console Sim-Racing
+// experience on a Thrustmaster T300 base.
+// 
+// This build is intended for use with a Thrustmaster T300 Base
+// (direct plugin), Playstation 4 Pro and Assetto Corsa Competizione. But,
+// having said that, it should work with any compatible Thrustmaster Base
+// and Console, since it's emulating the F1 Steering Wheel (Advanced Mode 
+// for PC not supported yet).
+//
+// Find out more about this build, instructions and parts list here:
+// https://github.com/cdemetriadis/Thrustmaster-T300-Steering-Wheel-Emulator
+//
+// GNU General Public License v3.0 or later
+// Constantinos Demetriadis (https://github.com/cdemetriadis/)
+//
 
 #include      <EEPROM.h>                              // Load EEPROM library for storing settings
 #include      <LiquidCrystal_I2C.h>                   // Load the Liquid Crystal Display library
