@@ -1,4 +1,23 @@
 //
+// Thrustmaster T300 Steering Wheel Emulator
+//
+// Arduino Nano based emulator for an advanced Console Sim-Racing
+// experience on a Thrustmaster T300 base.
+// 
+// This build is intended for use with a Thrustmaster T300 Base
+// (direct plugin), Playstation 4 Pro and Assetto Corsa Competizione. But,
+// having said that, it should work with any compatible Thrustmaster Base
+// and Console, since it's emulating the F1 Steering Wheel (Advanced Mode 
+// for PC not supported yet).
+//
+// Find out more about this build, instructions and parts list here:
+// https://github.com/cdemetriadis/Thrustmaster-T300-Steering-Wheel-Emulator
+//
+// GNU General Public License v3.0 or later
+// Constantinos Demetriadis (https://github.com/cdemetriadis/)
+//
+
+//
 // the default wheel state
 void resetWheelState() {
   // Default Wheel State for the Thrustmaster F1
