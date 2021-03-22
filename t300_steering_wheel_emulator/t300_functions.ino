@@ -117,10 +117,18 @@ void showMenu() {
         printDisplay(DISPLAY_STATUS_MENU, 1, 
                      ON_ICON+DISPLAY_RUNTIME_MENU, 0);
         break;
+      case 7:
+        printDisplay(DISPLAY_RUNTIME_MENU, 1, 
+                     ON_ICON+DISPLAY_CLOCK_MENU, 0);
+        break;
     }
   } else {
-    getDateTime();
-    printDisplay(getDate + "      " + getTime, 0, MENU, 0);
+    if (CLOCK_STATUS) {
+      getDateTime();
+      printDisplay(getDate + "      " + getTime, 0, MENU, 0);
+    } else {
+      printDisplay("", 0, MENU, 0);
+    }
   }
 };
 
@@ -152,6 +160,9 @@ void displaySelect() {
   }
   if (menu == 1 && menuPage == 6) { // Display Runtime
     displayRuntime();
+  }
+  if (menu == 1 && menuPage == 7) { // Display Clock
+    toggleClockStatus();
   }
 }
 
@@ -220,6 +231,19 @@ void turnDisplayOff() {
   EEPROM.write(3, DISPLAY_STATUS);
   menuPage = 1;
   menu = 0;
+}
+
+//
+// Toggle the buzzzer
+void toggleClockStatus() {
+  if (CLOCK_STATUS == 1) {
+    CLOCK_STATUS = 0;
+  } else {
+    CLOCK_STATUS = 1;
+  }
+  EEPROM.write(5, CLOCK_STATUS);
+  delay(DEBOUNCE);
+  showMenu();
 }
 
 //
