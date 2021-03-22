@@ -91,7 +91,7 @@ void printDisplay(String line_1="", int pos_1=0, String line_2="", int pos_2=0) 
 // What menu to display?
 void showMenu() {
   if (menu == 1) { // Main Menu
-    maxPages = 6;
+    maxPages = 7;
     switch (menuPage) {
       case 1:
         printDisplay(SELECT_OPTION, 1,
@@ -102,24 +102,24 @@ void showMenu() {
                      ON_ICON+DISPLAY_KEYPRESS_MENU + ((DISPLAY_KEYS) ? ON : OFF), 0);
         break;
       case 3:
-        printDisplay(DISPLAY_KEYPRESS_MENU + ((DISPLAY_KEYS) ? ON : OFF), 1,
-                     ON_ICON+BUZZER_STATUS_MENU + ((BUZZER_STATUS) ? ON : OFF), 0);
+        printDisplay(DISPLAY_KEYPRESS_MENU + ((DISPLAY_KEYS) ? ON : OFF), 1, 
+                     ON_ICON+DISPLAY_CLOCK_MENU + ((CLOCK_STATUS) ? ON : OFF), 0);
         break;
       case 4:
+        printDisplay(DISPLAY_CLOCK_MENU + ((CLOCK_STATUS) ? ON : OFF), 1,
+                     ON_ICON+BUZZER_STATUS_MENU + ((BUZZER_STATUS) ? ON : OFF), 0);
+        break;
+      case 5:
         printDisplay(BUZZER_STATUS_MENU + ((BUZZER_STATUS) ? ON : OFF), 1, 
                      ON_ICON+HOUR_CHIRP_MENU + ((HOUR_CHIRP) ? ON : OFF), 0);
         break;
-      case 5:
+      case 6:
         printDisplay(HOUR_CHIRP_MENU + ((HOUR_CHIRP) ? ON : OFF), 1, 
                      ON_ICON+DISPLAY_STATUS_MENU, 0);
         break;
-      case 6:
+      case 7:
         printDisplay(DISPLAY_STATUS_MENU, 1, 
                      ON_ICON+DISPLAY_RUNTIME_MENU, 0);
-        break;
-      case 7:
-        printDisplay(DISPLAY_RUNTIME_MENU, 1, 
-                     ON_ICON+DISPLAY_CLOCK_MENU, 0);
         break;
     }
   } else {
@@ -149,20 +149,20 @@ void displaySelect() {
   if (menu == 1 && menuPage == 2) { // Display Keypress
     toggleDisplayKeypress();
   }
-  if (menu == 1 && menuPage == 3) { // Buzzer Status
+  if (menu == 1 && menuPage == 3) { // Display Clock
+    toggleClockStatus();
+  }
+  if (menu == 1 && menuPage == 4) { // Buzzer Status
     toggleBuzzerStatus();
   }
-  if (menu == 1 && menuPage == 4) { // Hour Chirp
+  if (menu == 1 && menuPage == 5) { // Hour Chirp
     toggleHourChirp();
   }
-  if (menu == 1 && menuPage == 5) { // Display Off
+  if (menu == 1 && menuPage == 6) { // Display Off
     turnDisplayOff();
   }
-  if (menu == 1 && menuPage == 6) { // Display Runtime
+  if (menu == 1 && menuPage == 7) { // Display Runtime
     displayRuntime();
-  }
-  if (menu == 1 && menuPage == 7) { // Display Clock
-    toggleClockStatus();
   }
 }
 

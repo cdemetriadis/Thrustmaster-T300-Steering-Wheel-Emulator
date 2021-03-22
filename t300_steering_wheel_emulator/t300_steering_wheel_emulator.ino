@@ -32,7 +32,7 @@
 #define       DEBUG_LATENCY false                     // Debug response
 #define       Rotary_Switch_T300 true                 // Select the values for the Rotary Switches. 'true:T300', 'false:USB'
 #define       MESSAGE_DURATION 750                    // Duration of the messages on the screen
-#define       DEBOUNCE 90                            // Set this to the lowest value that gives the best result
+#define       DEBOUNCE 90                             // Set this to the lowest value that gives the best result
 
 //
 // Display Strings
