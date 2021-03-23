@@ -32,7 +32,7 @@
 #define       DEBUG_LATENCY false                     // Debug response
 #define       Rotary_Switch_T300 true                 // Select the values for the Rotary Switches. 'true:T300', 'false:USB'
 #define       MESSAGE_DURATION 750                    // Duration of the messages on the screen
-#define       DEBOUNCE 100                            // Set this to the lowest value that gives the best result
+#define       DEBOUNCE 90                             // Set this to the lowest value that gives the best result
 
 //
 // Display Strings
@@ -46,6 +46,7 @@ const String  MODE_GT = ":GT";
 const String  DISPLAY_KEYPRESS_MENU = "Keypress";
 const String  DISPLAY_STATUS_MENU = "Display Off";
 const String  BUZZER_STATUS_MENU = "Buzzer";
+const String  DISPLAY_CLOCK_MENU = "Date/Time";
 const String  HOUR_CHIRP_MENU = "Hour Chirp";
 const String  DISPLAY_RUNTIME_MENU = "Runtime";
 const String  ON = ":On";
@@ -58,6 +59,7 @@ bool          DISPLAY_KEYS = EEPROM.read(1);          // Retrieve the display ke
 bool          BUZZER_STATUS = EEPROM.read(2);         // Retrieve the buzzer status. 'true:1' on, 'false:0' off
 bool          DISPLAY_STATUS = EEPROM.read(3);        // Retrieve the display status. 'true:1' on, 'false:0' off
 bool          HOUR_CHIRP = EEPROM.read(4);            // Retrieve the hour chirp status. 'true:1' on, 'false:0' off
+bool          CLOCK_STATUS = EEPROM.read(5);           // Retrieve the clock status. 'true:1' on, 'false:0' off
 
 unsigned long startLoop;
 
