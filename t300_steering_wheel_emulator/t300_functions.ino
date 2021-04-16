@@ -91,33 +91,37 @@ void printDisplay(String line_1="", int pos_1=0, String line_2="", int pos_2=0) 
 // What menu to display?
 void showMenu() {
   if (menu == 1) { // Main Menu
-    maxPages = 7;
+    maxPages = 8;
     switch (menuPage) {
       case 1:
         printDisplay(SELECT_OPTION, 1,
-                     ON_ICON+DISPLAY_MODE_MENU + ((DISPLAY_MODE) ? MODE_PS : MODE_GT), 0);
+                     ON_ICON+WHEEL_MODE_MENU + ((WHEEL_MODE) ? WHEEL_MODE_PS : WHEEL_MODE_PC), 0);
         break;
       case 2:
-        printDisplay(DISPLAY_MODE_MENU + ((DISPLAY_MODE) ? MODE_PS : MODE_GT), 1,
-                     ON_ICON+DISPLAY_KEYPRESS_MENU + ((DISPLAY_KEYS) ? ON : OFF), 0);
+        printDisplay(WHEEL_MODE_MENU + ((WHEEL_MODE) ? WHEEL_MODE_PS : WHEEL_MODE_PC), 1,
+                     ON_ICON+DISPLAY_MODE_MENU + ((DISPLAY_MODE) ? DISPLAY_MODE_PS : DISPLAY_MODE_GT), 0);
         break;
       case 3:
+        printDisplay(DISPLAY_MODE_MENU + ((DISPLAY_MODE) ? DISPLAY_MODE_PS : DISPLAY_MODE_GT), 1,
+                     ON_ICON+DISPLAY_KEYPRESS_MENU + ((DISPLAY_KEYS) ? ON : OFF), 0);
+        break;
+      case 4:
         printDisplay(DISPLAY_KEYPRESS_MENU + ((DISPLAY_KEYS) ? ON : OFF), 1, 
                      ON_ICON+DISPLAY_CLOCK_MENU + ((CLOCK_STATUS) ? ON : OFF), 0);
         break;
-      case 4:
+      case 5:
         printDisplay(DISPLAY_CLOCK_MENU + ((CLOCK_STATUS) ? ON : OFF), 1,
                      ON_ICON+BUZZER_STATUS_MENU + ((BUZZER_STATUS) ? ON : OFF), 0);
         break;
-      case 5:
+      case 6:
         printDisplay(BUZZER_STATUS_MENU + ((BUZZER_STATUS) ? ON : OFF), 1, 
                      ON_ICON+HOUR_CHIRP_MENU + ((HOUR_CHIRP) ? ON : OFF), 0);
         break;
-      case 6:
+      case 7:
         printDisplay(HOUR_CHIRP_MENU + ((HOUR_CHIRP) ? ON : OFF), 1, 
                      ON_ICON+DISPLAY_STATUS_MENU, 0);
         break;
-      case 7:
+      case 8:
         printDisplay(DISPLAY_STATUS_MENU, 1, 
                      ON_ICON+DISPLAY_RUNTIME_MENU, 0);
         break;
@@ -144,26 +148,43 @@ void displayNext() {
 // Actions for the Display menu
 void displaySelect() {
   if (menu == 1 && menuPage == 1) { // Display Mode
+    toggleWheelMode();
+  }
+  if (menu == 1 && menuPage == 2) { // Display Mode
     toggleDisplayMode();
   }
-  if (menu == 1 && menuPage == 2) { // Display Keypress
+  if (menu == 1 && menuPage == 3) { // Display Keypress
     toggleDisplayKeypress();
   }
-  if (menu == 1 && menuPage == 3) { // Display Clock
+  if (menu == 1 && menuPage == 4) { // Display Clock
     toggleClockStatus();
   }
-  if (menu == 1 && menuPage == 4) { // Buzzer Status
+  if (menu == 1 && menuPage == 5) { // Buzzer Status
     toggleBuzzerStatus();
   }
-  if (menu == 1 && menuPage == 5) { // Hour Chirp
+  if (menu == 1 && menuPage == 6) { // Hour Chirp
     toggleHourChirp();
   }
-  if (menu == 1 && menuPage == 6) { // Display Off
+  if (menu == 1 && menuPage == 7) { // Display Off
     turnDisplayOff();
   }
-  if (menu == 1 && menuPage == 7) { // Display Runtime
+  if (menu == 1 && menuPage == 8) { // Display Runtime
     displayRuntime();
   }
+}
+
+
+//
+// Toggle Wheel Mode: Use Playstation or PC button
+void toggleWheelMode() {
+  if (WHEEL_MODE == 1) {
+    WHEEL_MODE = 0;
+  } else {
+    WHEEL_MODE = 1;
+  }
+  EEPROM.write(6, WHEEL_MODE);
+  delay(DEBOUNCE);
+  showMenu();
 }
 
 //
