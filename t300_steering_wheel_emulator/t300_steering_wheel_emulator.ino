@@ -126,7 +126,7 @@ volatile byte pos;
 
 //
 // Setup Button Matrix
-int           rowPin[] = {5, 6, 7, 8, 9};           // Set pins for rows > OUTPUT
+int           rowPin[] = {5, 6, 7, 8, 9};                   // Set pins for rows > OUTPUT
 int           colPin[] = {A0, A1, A2, A3, 11};              // Set pins for columns, could also use Analog pins > INPUT_PULLUP
 int           rowSize = sizeof(rowPin)/sizeof(rowPin[0]);
 int           colSize = sizeof(colPin)/sizeof(colPin[0]);
@@ -382,7 +382,7 @@ void loop() {
     case 225:
       if (WHEEL_MODE) { // PS Circle
         wheelState[0] = wheelState[0] & B01111111;
-      } else { // 5
+      } else { // PC 5
         wheelState[0] = wheelState[0] & B01111111;
       }
       buzzer();
@@ -447,7 +447,7 @@ void loop() {
       if (WHEEL_MODE) { // PS Share
         wheelState[1] = wheelState[1] & B11011111;
       } else { // PC 7
-        wheelState[1] = wheelState[1] & B01111111;
+        wheelState[1] = wheelState[1] & B11011111;
       }
       buzzer();
       if (DISPLAY_STATUS && DISPLAY_KEYS) {
@@ -465,7 +465,7 @@ void loop() {
     case 247:
       if (WHEEL_MODE) { // PS D-Pad Up
         wheelState[2] = wheelState[2] & B11110111;
-      } else { // PC 17
+      } else { // PC Up
         wheelState[2] = wheelState[2] & B11110111;
       }
       buzzer();
@@ -481,7 +481,7 @@ void loop() {
     case 269:
       if (WHEEL_MODE) { // PS D-Pad Down
         wheelState[2] = wheelState[2] & B10111111;
-      } else { // PC 16
+      } else { // PC Down
         wheelState[2] = wheelState[2] & B10111111;
       }
       buzzer();
@@ -497,7 +497,7 @@ void loop() {
     case 292:
       if (WHEEL_MODE) { // PS D-Pad Left
         wheelState[2] = wheelState[2] & B11101111;
-      } else { // PC 14
+      } else { // PC Left
         wheelState[2] = wheelState[2] & B11101111;
       }
       buzzer();
@@ -513,7 +513,7 @@ void loop() {
     case 316:
       if (WHEEL_MODE) { // PS D-Pad Right
         wheelState[2] = wheelState[2] & B11011111;
-      } else { // PC 15
+      } else { // PC Right
         wheelState[2] = wheelState[2] & B11011111;
       }
       buzzer();
@@ -595,7 +595,7 @@ void loop() {
     case 147:
       if (WHEEL_MODE) { // PS L1
         wheelState[0] = wheelState[0] & B11110111;
-      } else { // PC 1/22
+      } else { // PC 2/23
         wheelState[0] = wheelState[0] & B11110111;
       }
       buzzer();
@@ -611,7 +611,7 @@ void loop() {
     case 164:
       if (WHEEL_MODE) { // PS R1
         wheelState[0] = wheelState[0] & B11111011;
-      } else { // PC 2/23
+      } else { // PC 1/22
         wheelState[0] = wheelState[0] & B11111011;
       }
       buzzer();
@@ -663,10 +663,10 @@ void loop() {
     case 1000:
       if (WHEEL_MODE) { // PS D-Pad Up
         wheelState[2] = wheelState[2] & B11110111;
-      } else { // PC 18 BP-U
-        wheelState[2] = wheelState[2] & B01111111;
+      } else { // PC 17 CHRG+
+        // wheelState[3] = wheelState[3] & B11110111;
+        wheelState[2] = wheelState[2] & B11110111;
       }
-//      wheelState[3] = wheelState[3] & B11110111; // CHRG+
       encoderIncCount++;
       buzzer();
       if (DISPLAY_STATUS && DISPLAY_KEYS) {
@@ -681,11 +681,10 @@ void loop() {
     case 1100:
       if (WHEEL_MODE) { // PS D-Pad Down
         wheelState[2] = wheelState[2] & B10111111;
-      } else { // PC 19 BP-D
-        wheelState[2] = wheelState[2] & B11111011;
+      } else { // PC 16 CHRG-
+        // wheelState[3] = wheelState[3] & B10111111;
+        wheelState[2] = wheelState[2] & B10111111;
       }
-      
-//      wheelState[3] = wheelState[3] & B10111111; // CHRG-
       encoderDecCount++;
       buzzer();
       if (DISPLAY_STATUS && DISPLAY_KEYS) {
@@ -700,10 +699,10 @@ void loop() {
     case 2000:
       if (WHEEL_MODE) { // PS D-Pad Left
         wheelState[2] = wheelState[2] & B11101111;
-      } else { // PC 20 BP-L
-        wheelState[2] = wheelState[2] & B11111110;
+      } else { // PC 14 DIF IN+
+        // wheelState[3] = wheelState[3] & B11011111;
+        wheelState[2] = wheelState[2] & B11101111;
       }
-//      wheelState[3] = wheelState[3] & B11011111; // DIF IN+
       encoderDecCount++;
       buzzer();
       if (DISPLAY_STATUS && DISPLAY_KEYS) {
@@ -718,10 +717,10 @@ void loop() {
     case 2100: // D-Pad Right
       if (WHEEL_MODE) { // PS D-Pad Right
         wheelState[2] = wheelState[2] & B11011111;
-      } else { // PC 20 BP-R
-        wheelState[2] = wheelState[2] & B11111101;
+      } else { // PC 15 DIF IN-
+        //wheelState[3] = wheelState[3] & B11101111;
+        wheelState[2] = wheelState[2] & B11011111;
       }
-//      wheelState[3] = wheelState[3] & B11101111; // DIF IN-
       encoderIncCount++;
       buzzer();
       if (DISPLAY_STATUS && DISPLAY_KEYS) {
@@ -736,8 +735,8 @@ void loop() {
     case 3000: // L3
       if (WHEEL_MODE) { // PS L3
         wheelState[1] = wheelState[1] & B11111101;
-      } else { // PC CHRG+
-        wheelState[3] = wheelState[3] & B11110111;
+      } else { // PC 21
+        wheelState[2] = wheelState[2] & B01111111;
       }
       encoderDecCount++;
       buzzer();
@@ -753,8 +752,8 @@ void loop() {
     case 3100:
       if (WHEEL_MODE) { // PS R3
         wheelState[1] = wheelState[1] & B11111110;
-      } else { // PC CHRG-
-        wheelState[3] = wheelState[3] & B10111111;
+      } else { // PC 20
+        wheelState[2] = wheelState[2] & B11111011;
       }
       encoderIncCount++;
       buzzer();
