@@ -247,16 +247,31 @@ String CABActionMap[] = {
 
 int CABActionGuide[3][2][2] = {
   { // BB
-    {2, B10111111},   // D-Pad Down - wheelState[2] = wheelState[2] & B10111111;
-    {2, B11110111}    // D-Pad Up - wheelState[2] = wheelState[2] & B11110111;
+    {2, B10111111},   // D-Pad Down
+    {2, B11110111}    // D-Pad Up
   },
   { // ABS
-    {1, B11111101},  // L3 - wheelState[1] = wheelState[1] & B11111101;
-    {1, B11111110}   // R3 - wheelState[1] = wheelState[1] & B11111110;
+    {1, B11111101},  // L3
+    {1, B11111110}   // R3
   },
   { // TC
-    {2, B11101111},   // D-Pad Left - wheelState[2] = wheelState[2] & B11101111;
-    {2, B11011111}    // D-Pad Right - wheelState[2] = wheelState[2] & B11011111;
+    {2, B11101111},   // D-Pad Left
+    {2, B11011111}    // D-Pad Right
+  }
+};
+
+int CABActionGuidePC[3][2][2] = {
+  { // BB
+    {2, B10111111},   // D-Pad Down
+    {2, B11110111}    // D-Pad Up
+  },
+  { // ABS
+    {2, B01111111},  // L3
+    {2, B11111011}   // R3
+  },
+  { // TC
+    {2, B11101111},   // D-Pad Left
+    {2, B11011111}    // D-Pad Right
   }
 };
 
@@ -772,16 +787,24 @@ void loop() {
 
   // CAB Trigger 
   if (triggerStepsIncrease >= 1 && ((millis()-cabTrigger) > DEBOUNCE*2)) {
-    wheelState[CABActionGuide[triggerCAB][1][0]] = wheelState[CABActionGuide[triggerCAB][1][0]] & CABActionGuide[triggerCAB][1][1];
+    if (WHEEL_MODE) {
+      wheelState[CABActionGuide[triggerCAB][1][0]] = wheelState[CABActionGuide[triggerCAB][1][0]] & CABActionGuide[triggerCAB][1][1];
+    } else {
+      wheelState[CABActionGuidePC[triggerCAB][1][0]] = wheelState[CABActionGuidePC[triggerCAB][1][0]] & CABActionGuidePC[triggerCAB][1][1];
+    }
     triggerStepsIncrease--;
     cabTrigger = millis();
   }
   if (triggerStepsDecrease >= 1 && ((millis()-cabTrigger) > DEBOUNCE*2)) {
-    wheelState[CABActionGuide[triggerCAB][0][0]] = wheelState[CABActionGuide[triggerCAB][0][0]] & CABActionGuide[triggerCAB][0][1];
+    if (WHEEL_MODE) {
+      wheelState[CABActionGuide[triggerCAB][0][0]] = wheelState[CABActionGuide[triggerCAB][0][0]] & CABActionGuide[triggerCAB][0][1];
+    } else {
+      wheelState[CABActionGuidePC[triggerCAB][0][0]] = wheelState[CABActionGuidePC[triggerCAB][0][0]] & CABActionGuidePC[triggerCAB][0][1];
+    }
     triggerStepsDecrease--;
     cabTrigger = millis();
   }
-
+  
   #if DEBUG_WHEEL
     for (int i = 0; i < 8; i++) {
       Serial.print(wheelState[i], BIN);
