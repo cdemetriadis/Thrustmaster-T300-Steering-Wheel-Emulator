@@ -4,7 +4,7 @@ Here are all the wheel control bindings and how they map to each platform, **Pla
 
 I've also included how I've mapped them in **Assetto Corsa Competizione**, but obviosuly, this can be changed to your own liking. 
 
-You can switch between these two mapping settings on the wheel (Menu > Wheel Mode > PS or PC)
+You can switch between these two modes on the wheel (Menu > Wheel Mode > PS or PC)
 
 ## PlayStation (PS) Mode
 
@@ -34,13 +34,13 @@ You can switch between these two mapping settings on the wheel (Menu > Wheel Mod
 
 </center>
 
-## PC Advanced Mode
+## Advanced (PC) Mode
 
 ![F1 Steering Wheel](assets/f1-wheel-binding-pc.jpg)
 
 <center>
 
-| Wheel  | PC (Advanced Mode) | Assetto Corsa Competizione | In Game Menu |
+| Wheel  | PC                 | Assetto Corsa Competizione | In Game Menu |
 | -------| ------------------ | -------------------------- | ------------ |
 | **1**  | 3                  | Pit Limiter                |              |
 | **2**  | 4                  | Next Dash Page             |              |

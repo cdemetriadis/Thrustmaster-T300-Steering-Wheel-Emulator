@@ -104,8 +104,8 @@ The display is controlled by the three display buttons:
 Display Menu options:
 
 1. **Wheel Mode:** Set the mode of the wheel depending on which platform you're playing on:
-	* **PS** - PlayStation compatible mode
-	* **PC** - PC compatible mode
+	* **PS** - PlayStation (PS) Mode
+	* **PC** - Advanced (PC) Mode
 1. **Disp. Mode:** Set the mode of the display when Display Keypress is on. Every time you press a button it displays its' function:
 	* **PS** - Pressing any button displays the Playstation button function (Cross, Triangle, L2, R2, ... etc)
 	* **GT** - Pressing any button displays the simulator button mapping according to my personal preferences (Pit Limiter, HUD, Wipers, ... etc)
@@ -129,7 +129,7 @@ The Rotary encoders have been mapped as follows:
 | Antilock Braking System (ABS)  | L3            | R3             |
 | Traction Control (TC )         | D-Pad Left    | D-Pad Right    |
 
-#### PC Advanced Mode
+#### Advanced (PC) Mode
 
 | Description                    | Left Rot. (-) | Right Rot. (+) |
 | ------------------------------ | ------------- | -------------- |
