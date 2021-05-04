@@ -37,7 +37,7 @@
 //
 // Display Strings
 const String  VERSION = "v";
-const String  VERSION_NUMBER = "0.0.0";
+const String  VERSION_NUMBER = "0.5.0 beta";
 
 const String  ON_ICON = "~";
 const String  MENU = "~Ready";
