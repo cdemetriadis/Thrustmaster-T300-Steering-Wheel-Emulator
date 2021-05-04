@@ -36,6 +36,9 @@
 
 //
 // Display Strings
+const String  VERSION = "v";
+const String  VERSION_NUMBER = "0.0.0";
+
 const String  ON_ICON = "~";
 const String  MENU = "~Ready";
 const String  LOADING = "Loading...";

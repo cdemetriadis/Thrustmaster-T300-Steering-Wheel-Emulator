@@ -91,7 +91,7 @@ void printDisplay(String line_1="", int pos_1=0, String line_2="", int pos_2=0) 
 // What menu to display?
 void showMenu() {
   if (menu == 1) { // Main Menu
-    maxPages = 8;
+    maxPages = 9;
     switch (menuPage) {
       case 1:
         printDisplay(SELECT_OPTION, 1,
@@ -124,6 +124,10 @@ void showMenu() {
       case 8:
         printDisplay(DISPLAY_STATUS_MENU, 1, 
                      ON_ICON+DISPLAY_RUNTIME_MENU, 0);
+        break;
+      case 9:
+        printDisplay(DISPLAY_RUNTIME_MENU, 1, 
+                     ON_ICON + VERSION + VERSION_NUMBER, 0);
         break;
     }
   } else {
