@@ -4,7 +4,7 @@ This project started when I decided to update my steering wheel so that it would
 
 #### This build is intended for use with a Thrustmaster T300 Base (direct plugin), Playstation 4 Pro and Assetto Corsa Competizione. 
 
-But, having said that, it should work with **any compatible Thrustmaster Base and Console**, since it's emulating the F1 Steering Wheel (Advanced Mode for PC not supported yet).
+But, having said that, it should work with **any compatible Thrustmaster Base and Console**, since it's emulating the F1 Steering Wheel.
 
 ## The Build
 
@@ -95,12 +95,22 @@ In the name of saving GPIO's on the Nano, I created a 5x5 Button Matrix to suppo
 ### Display Menu
 There were a few reasons I wanted a display. **First,** I needed a way to change the wheel settings without the need to connect it to a computer. **Second,** I also thought it be nice to have a clock to display the real-world time & date. **Third,** the display could be used in future updates to display telemetry... (but nothing planned yet). **And finally,** it just looks cool.
 
-The display is controlled by the three display buttons (MENU, NEXT & SELECT) and has the following options:
+The display is controlled by the three display buttons:
 
-1. **Mode:** Set the mode of the display when Display Keypress is on. Every time you press a button it displays its' function:
+1. **MENU:** Open/close the Wheel Menu
+1. **NEXT:** Scroll through the Menu
+1. **SELECT:** Select an option
+
+Display Menu options:
+
+1. **Wheel Mode:** Set the mode of the wheel depending on which platform you're playing on:
+	* **PS** - PlayStation (PS) Mode
+	* **PC** - Advanced (PC) Mode
+1. **Disp. Mode:** Set the mode of the display when Display Keypress is on. Every time you press a button it displays its' function:
 	* **PS** - Pressing any button displays the Playstation button function (Cross, Triangle, L2, R2, ... etc)
 	* **GT** - Pressing any button displays the simulator button mapping according to my personal preferences (Pit Limiter, HUD, Wipers, ... etc)
 1. **Keypress:** Show the button keypress on the display
+1. **Date/Time:** Show or hide the Date & Time on the home screen
 1. **Buzzer** - Turn the buzzer on or off
 1. **Hour Chirp** - Yes, it could also beep every hour to keep track of the time you spend on the simuator
 1. **Display Off** - Turn the display off (any display button turns it back on a again)
@@ -111,15 +121,25 @@ The Rotary Encoders allow for quick access the **Brake Balance**, **ABS** and **
 
 The Rotary encoders have been mapped as follows:
 
+#### PlayStation (PS) Mode
+
 | Description                    | Left Rot. (-) | Right Rot. (+) |
 | ------------------------------ | ------------- | -------------- |
 | Brake Balance (BB)             | D-Pad Down    | D-Pad Up       |
 | Antilock Braking System (ABS)  | L3            | R3             |
 | Traction Control (TC )         | D-Pad Left    | D-Pad Right    |
 
+#### Advanced (PC) Mode
+
+| Description                    | Left Rot. (-) | Right Rot. (+) |
+| ------------------------------ | ------------- | -------------- |
+| Brake Balance (BB)             | Down          | Up             |
+| Antilock Braking System (ABS)  | 20            | 21             |
+| Traction Control (TC )         | Left          | Right          |
+
 ---
 
-:video_game: Here is the map of [**control bindings**](control-bindings.md) I've applied in Assetto Corsa Competizione.
+:video_game: Here is the map of [**control bindings**](control-bindings.md) I've applied in Assetto Corsa Competizione for both platforms.
 
 ---
 
